@@ -17,10 +17,12 @@ $ php ./curl_post.php <save_cookie> <send_cookie>
 ```
 
 #### 说明
+```bash
 需要修改:
 $url:       提交的URL
 $post_data: post提交的数据
 
 <save_cookie>: 保存取到的cookie的文件
 <send_cookie>: 需要发送到服务器的cookie文件
+```
 
