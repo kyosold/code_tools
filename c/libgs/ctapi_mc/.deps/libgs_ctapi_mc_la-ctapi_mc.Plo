@@ -1,0 +1,421 @@
+libgs_ctapi_mc_la-ctapi_mc.lo: ctapi_mc.c /usr/include/stdc-predef.h \
+ /usr/include/stdio.h /usr/include/features.h /usr/include/sys/cdefs.h \
+ /usr/include/bits/wordsize.h /usr/include/gnu/stubs.h \
+ /usr/include/gnu/stubs-64.h \
+ /usr/lib/gcc/x86_64-redhat-linux/4.8.5/include/stddef.h \
+ /usr/include/bits/types.h /usr/include/bits/typesizes.h \
+ /usr/include/libio.h /usr/include/_G_config.h /usr/include/wchar.h \
+ /usr/lib/gcc/x86_64-redhat-linux/4.8.5/include/stdarg.h \
+ /usr/include/bits/stdio_lim.h /usr/include/bits/sys_errlist.h \
+ /usr/include/bits/stdio.h /usr/include/stdlib.h \
+ /usr/include/bits/waitflags.h /usr/include/bits/waitstatus.h \
+ /usr/include/endian.h /usr/include/bits/endian.h \
+ /usr/include/bits/byteswap.h /usr/include/bits/byteswap-16.h \
+ /usr/include/sys/types.h /usr/include/time.h /usr/include/sys/select.h \
+ /usr/include/bits/select.h /usr/include/bits/sigset.h \
+ /usr/include/bits/time.h /usr/include/sys/sysmacros.h \
+ /usr/include/bits/pthreadtypes.h /usr/include/alloca.h \
+ /usr/include/bits/stdlib-float.h /usr/include/string.h \
+ /usr/include/xlocale.h /usr/include/bits/string.h \
+ /usr/include/bits/string2.h /usr/include/unistd.h \
+ /usr/include/bits/posix_opt.h /usr/include/bits/environments.h \
+ /usr/include/bits/confname.h /usr/include/getopt.h /usr/include/signal.h \
+ /usr/include/bits/signum.h /usr/include/bits/siginfo.h \
+ /usr/include/bits/sigaction.h /usr/include/bits/sigcontext.h \
+ /usr/include/bits/sigstack.h /usr/include/sys/ucontext.h \
+ /usr/include/bits/sigthread.h /usr/include/errno.h \
+ /usr/include/bits/errno.h /usr/include/linux/errno.h \
+ /usr/include/asm/errno.h /usr/include/asm-generic/errno.h \
+ /usr/include/asm-generic/errno-base.h \
+ /usr/include/libmemcached/memcached.h \
+ /usr/include/libmemcached-1.0/memcached.h /usr/include/inttypes.h \
+ /usr/lib/gcc/x86_64-redhat-linux/4.8.5/include/stdint.h \
+ /usr/include/stdint.h /usr/include/bits/wchar.h \
+ /usr/lib/gcc/x86_64-redhat-linux/4.8.5/include/stdbool.h \
+ /usr/include/libmemcached-1.0/visibility.h \
+ /usr/include/libmemcached-1.0/configure.h \
+ /usr/include/libmemcached-1.0/platform.h /usr/include/sys/socket.h \
+ /usr/include/sys/uio.h /usr/include/bits/uio.h \
+ /usr/include/bits/socket.h /usr/include/bits/socket_type.h \
+ /usr/include/bits/sockaddr.h /usr/include/asm/socket.h \
+ /usr/include/asm-generic/socket.h /usr/include/asm/sockios.h \
+ /usr/include/asm-generic/sockios.h /usr/include/netinet/in.h \
+ /usr/include/bits/in.h /usr/include/arpa/inet.h /usr/include/netdb.h \
+ /usr/include/rpc/netdb.h /usr/include/bits/netdb.h /usr/include/sys/un.h \
+ /usr/include/netinet/tcp.h /usr/include/libmemcached-1.0/limits.h \
+ /usr/include/libmemcached-1.0/defaults.h \
+ /usr/include/libmemcached-1.0/types/behavior.h \
+ /usr/include/libmemcached-1.0/types/callback.h \
+ /usr/include/libmemcached-1.0/types/connection.h \
+ /usr/include/libmemcached-1.0/types/hash.h \
+ /usr/include/libmemcached-1.0/types/return.h \
+ /usr/include/libmemcached-1.0/types/server_distribution.h \
+ /usr/include/libmemcached-1.0/return.h \
+ /usr/include/libmemcached-1.0/types.h \
+ /usr/include/libmemcached-1.0/callbacks.h \
+ /usr/include/libmemcached-1.0/alloc.h \
+ /usr/include/libmemcached-1.0/triggers.h \
+ /usr/include/libhashkit-1.0/hashkit.h \
+ /usr/include/libhashkit-1.0/visibility.h \
+ /usr/include/libhashkit-1.0/configure.h \
+ /usr/include/libhashkit-1.0/types.h /usr/include/libhashkit-1.0/has.h \
+ /usr/include/libhashkit-1.0/algorithm.h \
+ /usr/include/libhashkit-1.0/behavior.h \
+ /usr/include/libhashkit-1.0/digest.h \
+ /usr/include/libhashkit-1.0/function.h \
+ /usr/include/libhashkit-1.0/str_algorithm.h \
+ /usr/include/libhashkit-1.0/strerror.h \
+ /usr/include/libhashkit-1.0/string.h \
+ /usr/include/libmemcached-1.0/struct/callback.h \
+ /usr/include/libmemcached-1.0/struct/string.h \
+ /usr/include/libmemcached-1.0/struct/result.h \
+ /usr/include/libmemcached-1.0/struct/allocator.h \
+ /usr/include/libmemcached-1.0/struct/sasl.h /usr/include/sasl/sasl.h \
+ /usr/include/sasl/prop.h \
+ /usr/include/libmemcached-1.0/struct/memcached.h \
+ /usr/include/libmemcached-1.0/struct/server.h \
+ /usr/include/libmemcached-1.0/struct/stat.h \
+ /usr/include/libmemcached-1.0/basic_string.h \
+ /usr/include/libmemcached-1.0/error.h \
+ /usr/include/libmemcached-1.0/stats.h \
+ /usr/include/libmemcached-1.0/allocators.h \
+ /usr/include/libmemcached-1.0/analyze.h \
+ /usr/include/libmemcached-1.0/struct/analysis.h \
+ /usr/include/libmemcached-1.0/auto.h \
+ /usr/include/libmemcached-1.0/behavior.h \
+ /usr/include/libmemcached-1.0/callback.h \
+ /usr/include/libmemcached-1.0/delete.h \
+ /usr/include/libmemcached-1.0/dump.h \
+ /usr/include/libmemcached-1.0/encoding_key.h \
+ /usr/include/libmemcached-1.0/exist.h \
+ /usr/include/libmemcached-1.0/fetch.h \
+ /usr/include/libmemcached-1.0/flush.h \
+ /usr/include/libmemcached-1.0/flush_buffers.h \
+ /usr/include/libmemcached-1.0/get.h /usr/include/libmemcached-1.0/hash.h \
+ /usr/include/libmemcached-1.0/options.h \
+ /usr/include/libmemcached-1.0/parse.h \
+ /usr/include/libmemcached-1.0/quit.h \
+ /usr/include/libmemcached-1.0/result.h \
+ /usr/include/libmemcached-1.0/server.h \
+ /usr/include/libmemcached-1.0/server_list.h \
+ /usr/include/libmemcached-1.0/storage.h \
+ /usr/include/libmemcached-1.0/strerror.h \
+ /usr/include/libmemcached-1.0/touch.h \
+ /usr/include/libmemcached-1.0/verbosity.h \
+ /usr/include/libmemcached-1.0/version.h \
+ /usr/include/libmemcached-1.0/sasl.h \
+ /usr/include/libmemcached-1.0/deprecated_types.h ctlog.h \
+ /usr/include/syslog.h /usr/include/sys/syslog.h \
+ /usr/include/bits/syslog-path.h ctapi_mc.h
+
+/usr/include/stdc-predef.h:
+
+/usr/include/stdio.h:
+
+/usr/include/features.h:
+
+/usr/include/sys/cdefs.h:
+
+/usr/include/bits/wordsize.h:
+
+/usr/include/gnu/stubs.h:
+
+/usr/include/gnu/stubs-64.h:
+
+/usr/lib/gcc/x86_64-redhat-linux/4.8.5/include/stddef.h:
+
+/usr/include/bits/types.h:
+
+/usr/include/bits/typesizes.h:
+
+/usr/include/libio.h:
+
+/usr/include/_G_config.h:
+
+/usr/include/wchar.h:
+
+/usr/lib/gcc/x86_64-redhat-linux/4.8.5/include/stdarg.h:
+
+/usr/include/bits/stdio_lim.h:
+
+/usr/include/bits/sys_errlist.h:
+
+/usr/include/bits/stdio.h:
+
+/usr/include/stdlib.h:
+
+/usr/include/bits/waitflags.h:
+
+/usr/include/bits/waitstatus.h:
+
+/usr/include/endian.h:
+
+/usr/include/bits/endian.h:
+
+/usr/include/bits/byteswap.h:
+
+/usr/include/bits/byteswap-16.h:
+
+/usr/include/sys/types.h:
+
+/usr/include/time.h:
+
+/usr/include/sys/select.h:
+
+/usr/include/bits/select.h:
+
+/usr/include/bits/sigset.h:
+
+/usr/include/bits/time.h:
+
+/usr/include/sys/sysmacros.h:
+
+/usr/include/bits/pthreadtypes.h:
+
+/usr/include/alloca.h:
+
+/usr/include/bits/stdlib-float.h:
+
+/usr/include/string.h:
+
+/usr/include/xlocale.h:
+
+/usr/include/bits/string.h:
+
+/usr/include/bits/string2.h:
+
+/usr/include/unistd.h:
+
+/usr/include/bits/posix_opt.h:
+
+/usr/include/bits/environments.h:
+
+/usr/include/bits/confname.h:
+
+/usr/include/getopt.h:
+
+/usr/include/signal.h:
+
+/usr/include/bits/signum.h:
+
+/usr/include/bits/siginfo.h:
+
+/usr/include/bits/sigaction.h:
+
+/usr/include/bits/sigcontext.h:
+
+/usr/include/bits/sigstack.h:
+
+/usr/include/sys/ucontext.h:
+
+/usr/include/bits/sigthread.h:
+
+/usr/include/errno.h:
+
+/usr/include/bits/errno.h:
+
+/usr/include/linux/errno.h:
+
+/usr/include/asm/errno.h:
+
+/usr/include/asm-generic/errno.h:
+
+/usr/include/asm-generic/errno-base.h:
+
+/usr/include/libmemcached/memcached.h:
+
+/usr/include/libmemcached-1.0/memcached.h:
+
+/usr/include/inttypes.h:
+
+/usr/lib/gcc/x86_64-redhat-linux/4.8.5/include/stdint.h:
+
+/usr/include/stdint.h:
+
+/usr/include/bits/wchar.h:
+
+/usr/lib/gcc/x86_64-redhat-linux/4.8.5/include/stdbool.h:
+
+/usr/include/libmemcached-1.0/visibility.h:
+
+/usr/include/libmemcached-1.0/configure.h:
+
+/usr/include/libmemcached-1.0/platform.h:
+
+/usr/include/sys/socket.h:
+
+/usr/include/sys/uio.h:
+
+/usr/include/bits/uio.h:
+
+/usr/include/bits/socket.h:
+
+/usr/include/bits/socket_type.h:
+
+/usr/include/bits/sockaddr.h:
+
+/usr/include/asm/socket.h:
+
+/usr/include/asm-generic/socket.h:
+
+/usr/include/asm/sockios.h:
+
+/usr/include/asm-generic/sockios.h:
+
+/usr/include/netinet/in.h:
+
+/usr/include/bits/in.h:
+
+/usr/include/arpa/inet.h:
+
+/usr/include/netdb.h:
+
+/usr/include/rpc/netdb.h:
+
+/usr/include/bits/netdb.h:
+
+/usr/include/sys/un.h:
+
+/usr/include/netinet/tcp.h:
+
+/usr/include/libmemcached-1.0/limits.h:
+
+/usr/include/libmemcached-1.0/defaults.h:
+
+/usr/include/libmemcached-1.0/types/behavior.h:
+
+/usr/include/libmemcached-1.0/types/callback.h:
+
+/usr/include/libmemcached-1.0/types/connection.h:
+
+/usr/include/libmemcached-1.0/types/hash.h:
+
+/usr/include/libmemcached-1.0/types/return.h:
+
+/usr/include/libmemcached-1.0/types/server_distribution.h:
+
+/usr/include/libmemcached-1.0/return.h:
+
+/usr/include/libmemcached-1.0/types.h:
+
+/usr/include/libmemcached-1.0/callbacks.h:
+
+/usr/include/libmemcached-1.0/alloc.h:
+
+/usr/include/libmemcached-1.0/triggers.h:
+
+/usr/include/libhashkit-1.0/hashkit.h:
+
+/usr/include/libhashkit-1.0/visibility.h:
+
+/usr/include/libhashkit-1.0/configure.h:
+
+/usr/include/libhashkit-1.0/types.h:
+
+/usr/include/libhashkit-1.0/has.h:
+
+/usr/include/libhashkit-1.0/algorithm.h:
+
+/usr/include/libhashkit-1.0/behavior.h:
+
+/usr/include/libhashkit-1.0/digest.h:
+
+/usr/include/libhashkit-1.0/function.h:
+
+/usr/include/libhashkit-1.0/str_algorithm.h:
+
+/usr/include/libhashkit-1.0/strerror.h:
+
+/usr/include/libhashkit-1.0/string.h:
+
+/usr/include/libmemcached-1.0/struct/callback.h:
+
+/usr/include/libmemcached-1.0/struct/string.h:
+
+/usr/include/libmemcached-1.0/struct/result.h:
+
+/usr/include/libmemcached-1.0/struct/allocator.h:
+
+/usr/include/libmemcached-1.0/struct/sasl.h:
+
+/usr/include/sasl/sasl.h:
+
+/usr/include/sasl/prop.h:
+
+/usr/include/libmemcached-1.0/struct/memcached.h:
+
+/usr/include/libmemcached-1.0/struct/server.h:
+
+/usr/include/libmemcached-1.0/struct/stat.h:
+
+/usr/include/libmemcached-1.0/basic_string.h:
+
+/usr/include/libmemcached-1.0/error.h:
+
+/usr/include/libmemcached-1.0/stats.h:
+
+/usr/include/libmemcached-1.0/allocators.h:
+
+/usr/include/libmemcached-1.0/analyze.h:
+
+/usr/include/libmemcached-1.0/struct/analysis.h:
+
+/usr/include/libmemcached-1.0/auto.h:
+
+/usr/include/libmemcached-1.0/behavior.h:
+
+/usr/include/libmemcached-1.0/callback.h:
+
+/usr/include/libmemcached-1.0/delete.h:
+
+/usr/include/libmemcached-1.0/dump.h:
+
+/usr/include/libmemcached-1.0/encoding_key.h:
+
+/usr/include/libmemcached-1.0/exist.h:
+
+/usr/include/libmemcached-1.0/fetch.h:
+
+/usr/include/libmemcached-1.0/flush.h:
+
+/usr/include/libmemcached-1.0/flush_buffers.h:
+
+/usr/include/libmemcached-1.0/get.h:
+
+/usr/include/libmemcached-1.0/hash.h:
+
+/usr/include/libmemcached-1.0/options.h:
+
+/usr/include/libmemcached-1.0/parse.h:
+
+/usr/include/libmemcached-1.0/quit.h:
+
+/usr/include/libmemcached-1.0/result.h:
+
+/usr/include/libmemcached-1.0/server.h:
+
+/usr/include/libmemcached-1.0/server_list.h:
+
+/usr/include/libmemcached-1.0/storage.h:
+
+/usr/include/libmemcached-1.0/strerror.h:
+
+/usr/include/libmemcached-1.0/touch.h:
+
+/usr/include/libmemcached-1.0/verbosity.h:
+
+/usr/include/libmemcached-1.0/version.h:
+
+/usr/include/libmemcached-1.0/sasl.h:
+
+/usr/include/libmemcached-1.0/deprecated_types.h:
+
+ctlog.h:
+
+/usr/include/syslog.h:
+
+/usr/include/sys/syslog.h:
+
+/usr/include/bits/syslog-path.h:
+
+ctapi_mc.h:
