@@ -13,16 +13,30 @@ Intro
 #### 命令行执行
 
 ```bash
-$ php ./curl_post.php <save_cookie> <send_cookie>
+$ php ./curl_post.php
 ```
 
-#### 说明
+#### 使用方式
 ```bash
-需要修改:
-$url:       提交的URL
-$post_data: post提交的数据
+$url:               提交的URL
+$method:            GET 或 POST
+$post_data:         post提交的数据
+save_cookie_file:   保存取到的cookie的文件
+send_cookie_file:   需要发送到服务器的cookie文件
 
-<save_cookie>: 保存取到的cookie的文件
-<send_cookie>: 需要发送到服务器的cookie文件
+// 比如：
+// 登录使用user:abc password:123 登录url: https://passport.xxx.com/login.php
+// 需要保存cookie到文件: ./cookie.txt
+$url = 'https://passport.xxx.com/login.php';
+$method = 'POST';
+$post_data = array(
+        'user'      => 'abc',
+        'password'  => '123'
+    );
+$save_cookie_fs = './cookie.txt';
+$send_cookie_fs = '';
+
+$res = submit_curl_action($url, $method, $post_data, $save_cookie_fs, $send_cookie_fs);
+var_dump($res);
 ```
 
