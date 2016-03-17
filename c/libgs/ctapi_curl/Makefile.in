@@ -245,6 +245,7 @@ OBJEXT = @OBJEXT@
 OTOOL = @OTOOL@
 OTOOL64 = @OTOOL64@
 PACKAGE = @PACKAGE@
+PACKAGENAME = @PACKAGENAME@
 PACKAGE_BUGREPORT = @PACKAGE_BUGREPORT@
 PACKAGE_NAME = @PACKAGE_NAME@
 PACKAGE_STRING = @PACKAGE_STRING@
@@ -291,7 +292,7 @@ htmldir = @htmldir@
 includedir = @includedir@
 infodir = @infodir@
 install_sh = @install_sh@
-libdir = $(prefix)/lib/ctapi_curl
+libdir = $(prefix)/lib64/@PACKAGENAME@/ctapi_curl
 libexecdir = @libexecdir@
 localedir = @localedir@
 localstatedir = @localstatedir@
@@ -317,8 +318,8 @@ AUTOMAKE_OPTIONS = foreign
 @BUILD_ctapi_curl_TRUE@libgs_ctapi_curl_la_SOURCES = ctapi_curl.c ctapi_curl.h
 @BUILD_ctapi_curl_TRUE@libgs_ctapi_curl_la_CFLAGS = -g -I./
 
-# 安装头文件到 {$prefix}/include/ctapi_curl/ 下
-@BUILD_ctapi_curl_TRUE@ctapimcincludedir = $(includedir)/ctapi_curl
+# 安装头文件到 {$prefix}/include/libgs/ctapi_curl/ 下
+@BUILD_ctapi_curl_TRUE@ctapimcincludedir = $(includedir)/@PACKAGENAME@/ctapi_curl
 @BUILD_ctapi_curl_TRUE@ctapimcinclude_HEADERS = ctapi_curl.h
 all: all-am
 

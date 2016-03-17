@@ -245,6 +245,7 @@ OBJEXT = @OBJEXT@
 OTOOL = @OTOOL@
 OTOOL64 = @OTOOL64@
 PACKAGE = @PACKAGE@
+PACKAGENAME = @PACKAGENAME@
 PACKAGE_BUGREPORT = @PACKAGE_BUGREPORT@
 PACKAGE_NAME = @PACKAGE_NAME@
 PACKAGE_STRING = @PACKAGE_STRING@
@@ -291,7 +292,7 @@ htmldir = @htmldir@
 includedir = @includedir@
 infodir = @infodir@
 install_sh = @install_sh@
-libdir = $(prefix)/lib/ctapi_mc
+libdir = $(prefix)/lib64/@PACKAGENAME@/ctapi_mc
 libexecdir = @libexecdir@
 localedir = @localedir@
 localstatedir = @localstatedir@
@@ -317,8 +318,8 @@ AUTOMAKE_OPTIONS = foreign
 @BUILD_ctapi_mc_TRUE@libgs_ctapi_mc_la_SOURCES = ctapi_mc.c ctapi_mc.h
 @BUILD_ctapi_mc_TRUE@libgs_ctapi_mc_la_CFLAGS = -g -I./
 
-# 安装头文件到 {$prefix}/include/ctapi_mc/ 下
-@BUILD_ctapi_mc_TRUE@ctapimcincludedir = $(includedir)/ctapi_mc
+# 安装头文件到 {$prefix}/include/libgs/ctapi_mc/ 下
+@BUILD_ctapi_mc_TRUE@ctapimcincludedir = $(includedir)/@PACKAGENAME@/ctapi_mc
 @BUILD_ctapi_mc_TRUE@ctapimcinclude_HEADERS = ctapi_mc.h
 all: all-am
 

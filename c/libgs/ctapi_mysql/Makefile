@@ -211,7 +211,7 @@ CFLAGS = -g -O2
 CPP = gcc -E
 CPPFLAGS = 
 CYGPATH_W = echo
-DEFS = -DPACKAGE_NAME=\"libgs.x86_64\" -DPACKAGE_TARNAME=\"libgs-x86_64\" -DPACKAGE_VERSION=\"0.1\" -DPACKAGE_STRING=\"libgs.x86_64\ 0.1\" -DPACKAGE_BUGREPORT=\"kyosold@qq.com\" -DPACKAGE_URL=\"\" -DPACKAGE=\"libgs-x86_64\" -DVERSION=\"0.1\" -DHAVE_LIBCURL=1 -DSTDC_HEADERS=1 -DHAVE_SYS_TYPES_H=1 -DHAVE_SYS_STAT_H=1 -DHAVE_STDLIB_H=1 -DHAVE_STRING_H=1 -DHAVE_MEMORY_H=1 -DHAVE_STRINGS_H=1 -DHAVE_INTTYPES_H=1 -DHAVE_STDINT_H=1 -DHAVE_UNISTD_H=1 -DHAVE_DLFCN_H=1 -DLT_OBJDIR=\".libs/\" -DHAVE_LIMITS_H=1 -DHAVE_STDDEF_H=1 -DHAVE_STDINT_H=1 -DHAVE_STDLIB_H=1 -DHAVE_STRING_H=1 -DHAVE_UNISTD_H=1 -DHAVE__BOOL=1 -DHAVE_STDLIB_H=1 -DHAVE_MALLOC=1 -DHAVE_MEMCHR=1 -DHAVE_MEMMOVE=1 -DHAVE_MEMSET=1 -DHAVE_STRCASECMP=1 -DHAVE_STRCHR=1 -DHAVE_STRTOL=1
+DEFS = -DPACKAGE_NAME=\"libgs.x86_64\" -DPACKAGE_TARNAME=\"libgs-x86_64\" -DPACKAGE_VERSION=\"0.1\" -DPACKAGE_STRING=\"libgs.x86_64\ 0.1\" -DPACKAGE_BUGREPORT=\"kyosold@qq.com\" -DPACKAGE_URL=\"\" -DPACKAGE=\"libgs-x86_64\" -DVERSION=\"0.1\" -DHAVE_LIBMEMCACHED=1 -DHAVE_LIBCURL=1 -DSTDC_HEADERS=1 -DHAVE_SYS_TYPES_H=1 -DHAVE_SYS_STAT_H=1 -DHAVE_STDLIB_H=1 -DHAVE_STRING_H=1 -DHAVE_MEMORY_H=1 -DHAVE_STRINGS_H=1 -DHAVE_INTTYPES_H=1 -DHAVE_STDINT_H=1 -DHAVE_UNISTD_H=1 -DHAVE_DLFCN_H=1 -DLT_OBJDIR=\".libs/\" -DHAVE_LIMITS_H=1 -DHAVE_STDDEF_H=1 -DHAVE_STDINT_H=1 -DHAVE_STDLIB_H=1 -DHAVE_STRING_H=1 -DHAVE_UNISTD_H=1 -DHAVE__BOOL=1 -DHAVE_STDLIB_H=1 -DHAVE_MALLOC=1 -DHAVE_MEMCHR=1 -DHAVE_MEMMOVE=1 -DHAVE_MEMSET=1 -DHAVE_STRCASECMP=1 -DHAVE_STRCHR=1 -DHAVE_STRTOL=1
 DEPDIR = .deps
 DLLTOOL = false
 DSYMUTIL = 
@@ -231,7 +231,7 @@ INSTALL_STRIP_PROGRAM = $(install_sh) -c -s
 LD = /usr/bin/ld -m elf_x86_64
 LDFLAGS = 
 LIBOBJS = 
-LIBS = -lcurl 
+LIBS = -lcurl -lmemcached 
 LIBTOOL = $(SHELL) $(top_builddir)/libtool
 LIPO = 
 LN_S = ln -s
@@ -246,6 +246,7 @@ OBJEXT = o
 OTOOL = 
 OTOOL64 = 
 PACKAGE = libgs-x86_64
+PACKAGENAME = libgs
 PACKAGE_BUGREPORT = kyosold@qq.com
 PACKAGE_NAME = libgs.x86_64
 PACKAGE_STRING = libgs.x86_64 0.1
@@ -292,7 +293,7 @@ htmldir = ${docdir}
 includedir = ${prefix}/include
 infodir = ${datarootdir}/info
 install_sh = ${SHELL} /root/dev/libgs/install-sh
-libdir = $(prefix)/lib/ctapi_mysql
+libdir = $(prefix)/lib64/libgs/ctapi_mysql
 libexecdir = ${exec_prefix}/libexec
 localedir = ${datarootdir}/locale
 localstatedir = ${prefix}/var
@@ -300,7 +301,7 @@ mandir = ${datarootdir}/man
 mkdir_p = $(MKDIR_P)
 oldincludedir = /usr/include
 pdfdir = ${docdir}
-prefix = /usr/local/libgs
+prefix = /usr/local
 program_transform_name = s,x,x,
 psdir = ${docdir}
 sbindir = ${exec_prefix}/sbin
@@ -318,8 +319,8 @@ AUTOMAKE_OPTIONS = foreign
 #libgs_ctapi_mysql_la_SOURCES = ctapi_mysql.c ctapi_mysql.h
 #libgs_ctapi_mysql_la_CFLAGS = -g -I./
 
-# 安装头文件到 {$prefix}/include/ctapi_mysql/ 下
-#ctapimysqlincludedir = $(includedir)/ctapi_mysql
+# 安装头文件到 {$prefix}/include/libgs/ctapi_mysql/ 下
+#ctapimysqlincludedir = $(includedir)/libgs/ctapi_mysql
 #ctapimysqlinclude_HEADERS = ctapi_mysql.h
 all: all-am
 

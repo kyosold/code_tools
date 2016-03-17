@@ -666,6 +666,7 @@ build_vendor
 build_cpu
 build
 LIBTOOL
+PACKAGENAME
 BUILD_ctapi_curl_FALSE
 BUILD_ctapi_curl_TRUE
 BUILD_ctapi_mysql_FALSE
@@ -3827,7 +3828,6 @@ if test "${with_ctapi_mc+set}" = set; then :
   withval=$with_ctapi_mc; zmq_ctapi_mc="yes"
 fi
 
-
 # Checks for libraries.
 if test "x$zmq_ctapi_mc" == "xyes"; then
 
@@ -4020,6 +4020,9 @@ else
   BUILD_ctapi_curl_TRUE='#'
   BUILD_ctapi_curl_FALSE=
 fi
+
+
+PACKAGENAME="libgs"
 
 
 case `pwd` in

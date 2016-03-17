@@ -5,8 +5,8 @@ lib_LTLIBRARIES=libgs_stralloc.la
 libgs_stralloc_la_SOURCES=stralloc.c
 libgs_stralloc_la_CFLAGS=-g -I./
 
-# 安装头文件到 {$prefix}/include/stralloc/ 下
-strallocincludedir=$(includedir)/stralloc
+# 安装头文件到 {$prefix}/include/libgs/stralloc/ 下
+strallocincludedir=$(includedir)/@PACKAGENAME@/stralloc
 strallocinclude_HEADERS=stralloc.h
 
-libdir=$(prefix)/lib/stralloc
+libdir=$(prefix)/lib64/@PACKAGENAME@/stralloc

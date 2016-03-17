@@ -241,6 +241,7 @@ OBJEXT = @OBJEXT@
 OTOOL = @OTOOL@
 OTOOL64 = @OTOOL64@
 PACKAGE = @PACKAGE@
+PACKAGENAME = @PACKAGENAME@
 PACKAGE_BUGREPORT = @PACKAGE_BUGREPORT@
 PACKAGE_NAME = @PACKAGE_NAME@
 PACKAGE_STRING = @PACKAGE_STRING@
@@ -287,7 +288,7 @@ htmldir = @htmldir@
 includedir = @includedir@
 infodir = @infodir@
 install_sh = @install_sh@
-libdir = $(prefix)/lib/hashmap
+libdir = $(prefix)/lib64/@PACKAGENAME@/hashmap
 libexecdir = @libexecdir@
 localedir = @localedir@
 localstatedir = @localstatedir@
@@ -313,8 +314,8 @@ lib_LTLIBRARIES = libgs_hashmap.la
 libgs_hashmap_la_SOURCES = hashmap.c
 libgs_hashmap_la_CFLAGS = -g -I./
 
-# 安装头文件到 {$prefix}/include/hashmap/ 下
-hashmapincludedir = $(includedir)/hashmap
+# 安装头文件到 {$prefix}/include/libgs/hashmap/ 下
+hashmapincludedir = $(includedir)/@PACKAGENAME@/hashmap
 hashmapinclude_HEADERS = hashmap.h
 all: all-am
 

@@ -18,7 +18,6 @@ AC_ARG_WITH(
 	[zmq_ctapi_mc="yes"],
 	[]
 )
-
 # Checks for libraries.
 if test "x$zmq_ctapi_mc" == "xyes"; then
 	AC_CHECK_LIB([memcached], [memcached_set], [], [AC_MSG_ERROR([Could not find library -lmemcached])])
@@ -52,6 +51,8 @@ fi
 AM_CONDITIONAL(BUILD_ctapi_mc, test "x$zmq_ctapi_mc" == "xyes")
 AM_CONDITIONAL(BUILD_ctapi_mysql, test "x$zmq_ctapi_mysql" == "xyes")
 AM_CONDITIONAL(BUILD_ctapi_curl, test "x$zmq_ctapi_curl" == "xyes")
+
+AC_SUBST([PACKAGENAME], ["libgs"])
 
 AC_PROG_LIBTOOL
 

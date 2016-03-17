@@ -121,8 +121,8 @@ am__installdirs = "$(DESTDIR)$(libdir)" \
 LTLIBRARIES = $(lib_LTLIBRARIES)
 libgs_ctapi_mc_la_LIBADD =
 am__libgs_ctapi_mc_la_SOURCES_DIST = ctapi_mc.c ctapi_mc.h
-#am_libgs_ctapi_mc_la_OBJECTS =  \
-#	libgs_ctapi_mc_la-ctapi_mc.lo
+am_libgs_ctapi_mc_la_OBJECTS =  \
+	libgs_ctapi_mc_la-ctapi_mc.lo
 libgs_ctapi_mc_la_OBJECTS = $(am_libgs_ctapi_mc_la_OBJECTS)
 AM_V_lt = $(am__v_lt_$(V))
 am__v_lt_ = $(am__v_lt_$(AM_DEFAULT_VERBOSITY))
@@ -132,7 +132,7 @@ libgs_ctapi_mc_la_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
 	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CCLD) \
 	$(libgs_ctapi_mc_la_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) $(LDFLAGS) \
 	-o $@
-#am_libgs_ctapi_mc_la_rpath = -rpath $(libdir)
+am_libgs_ctapi_mc_la_rpath = -rpath $(libdir)
 AM_V_P = $(am__v_P_$(V))
 am__v_P_ = $(am__v_P_$(AM_DEFAULT_VERBOSITY))
 am__v_P_0 = false
@@ -210,7 +210,7 @@ CFLAGS = -g -O2
 CPP = gcc -E
 CPPFLAGS = 
 CYGPATH_W = echo
-DEFS = -DPACKAGE_NAME=\"libgs.x86_64\" -DPACKAGE_TARNAME=\"libgs-x86_64\" -DPACKAGE_VERSION=\"0.1\" -DPACKAGE_STRING=\"libgs.x86_64\ 0.1\" -DPACKAGE_BUGREPORT=\"kyosold@qq.com\" -DPACKAGE_URL=\"\" -DPACKAGE=\"libgs-x86_64\" -DVERSION=\"0.1\" -DHAVE_LIBCURL=1 -DSTDC_HEADERS=1 -DHAVE_SYS_TYPES_H=1 -DHAVE_SYS_STAT_H=1 -DHAVE_STDLIB_H=1 -DHAVE_STRING_H=1 -DHAVE_MEMORY_H=1 -DHAVE_STRINGS_H=1 -DHAVE_INTTYPES_H=1 -DHAVE_STDINT_H=1 -DHAVE_UNISTD_H=1 -DHAVE_DLFCN_H=1 -DLT_OBJDIR=\".libs/\" -DHAVE_LIMITS_H=1 -DHAVE_STDDEF_H=1 -DHAVE_STDINT_H=1 -DHAVE_STDLIB_H=1 -DHAVE_STRING_H=1 -DHAVE_UNISTD_H=1 -DHAVE__BOOL=1 -DHAVE_STDLIB_H=1 -DHAVE_MALLOC=1 -DHAVE_MEMCHR=1 -DHAVE_MEMMOVE=1 -DHAVE_MEMSET=1 -DHAVE_STRCASECMP=1 -DHAVE_STRCHR=1 -DHAVE_STRTOL=1
+DEFS = -DPACKAGE_NAME=\"libgs.x86_64\" -DPACKAGE_TARNAME=\"libgs-x86_64\" -DPACKAGE_VERSION=\"0.1\" -DPACKAGE_STRING=\"libgs.x86_64\ 0.1\" -DPACKAGE_BUGREPORT=\"kyosold@qq.com\" -DPACKAGE_URL=\"\" -DPACKAGE=\"libgs-x86_64\" -DVERSION=\"0.1\" -DHAVE_LIBMEMCACHED=1 -DHAVE_LIBCURL=1 -DSTDC_HEADERS=1 -DHAVE_SYS_TYPES_H=1 -DHAVE_SYS_STAT_H=1 -DHAVE_STDLIB_H=1 -DHAVE_STRING_H=1 -DHAVE_MEMORY_H=1 -DHAVE_STRINGS_H=1 -DHAVE_INTTYPES_H=1 -DHAVE_STDINT_H=1 -DHAVE_UNISTD_H=1 -DHAVE_DLFCN_H=1 -DLT_OBJDIR=\".libs/\" -DHAVE_LIMITS_H=1 -DHAVE_STDDEF_H=1 -DHAVE_STDINT_H=1 -DHAVE_STDLIB_H=1 -DHAVE_STRING_H=1 -DHAVE_UNISTD_H=1 -DHAVE__BOOL=1 -DHAVE_STDLIB_H=1 -DHAVE_MALLOC=1 -DHAVE_MEMCHR=1 -DHAVE_MEMMOVE=1 -DHAVE_MEMSET=1 -DHAVE_STRCASECMP=1 -DHAVE_STRCHR=1 -DHAVE_STRTOL=1
 DEPDIR = .deps
 DLLTOOL = false
 DSYMUTIL = 
@@ -230,7 +230,7 @@ INSTALL_STRIP_PROGRAM = $(install_sh) -c -s
 LD = /usr/bin/ld -m elf_x86_64
 LDFLAGS = 
 LIBOBJS = 
-LIBS = -lcurl 
+LIBS = -lcurl -lmemcached 
 LIBTOOL = $(SHELL) $(top_builddir)/libtool
 LIPO = 
 LN_S = ln -s
@@ -245,6 +245,7 @@ OBJEXT = o
 OTOOL = 
 OTOOL64 = 
 PACKAGE = libgs-x86_64
+PACKAGENAME = libgs
 PACKAGE_BUGREPORT = kyosold@qq.com
 PACKAGE_NAME = libgs.x86_64
 PACKAGE_STRING = libgs.x86_64 0.1
@@ -291,7 +292,7 @@ htmldir = ${docdir}
 includedir = ${prefix}/include
 infodir = ${datarootdir}/info
 install_sh = ${SHELL} /root/dev/libgs/install-sh
-libdir = $(prefix)/lib/ctapi_mc
+libdir = $(prefix)/lib64/libgs/ctapi_mc
 libexecdir = ${exec_prefix}/libexec
 localedir = ${datarootdir}/locale
 localstatedir = ${prefix}/var
@@ -299,7 +300,7 @@ mandir = ${datarootdir}/man
 mkdir_p = $(MKDIR_P)
 oldincludedir = /usr/include
 pdfdir = ${docdir}
-prefix = /usr/local/libgs
+prefix = /usr/local
 program_transform_name = s,x,x,
 psdir = ${docdir}
 sbindir = ${exec_prefix}/sbin
@@ -313,13 +314,13 @@ top_srcdir = ..
 AUTOMAKE_OPTIONS = foreign
 
 # [动态库]
-#lib_LTLIBRARIES = libgs_ctapi_mc.la
-#libgs_ctapi_mc_la_SOURCES = ctapi_mc.c ctapi_mc.h
-#libgs_ctapi_mc_la_CFLAGS = -g -I./
+lib_LTLIBRARIES = libgs_ctapi_mc.la
+libgs_ctapi_mc_la_SOURCES = ctapi_mc.c ctapi_mc.h
+libgs_ctapi_mc_la_CFLAGS = -g -I./
 
-# 安装头文件到 {$prefix}/include/ctapi_mc/ 下
-#ctapimcincludedir = $(includedir)/ctapi_mc
-#ctapimcinclude_HEADERS = ctapi_mc.h
+# 安装头文件到 {$prefix}/include/libgs/ctapi_mc/ 下
+ctapimcincludedir = $(includedir)/libgs/ctapi_mc
+ctapimcinclude_HEADERS = ctapi_mc.h
 all: all-am
 
 .SUFFIXES:

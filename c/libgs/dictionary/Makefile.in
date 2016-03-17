@@ -241,6 +241,7 @@ OBJEXT = @OBJEXT@
 OTOOL = @OTOOL@
 OTOOL64 = @OTOOL64@
 PACKAGE = @PACKAGE@
+PACKAGENAME = @PACKAGENAME@
 PACKAGE_BUGREPORT = @PACKAGE_BUGREPORT@
 PACKAGE_NAME = @PACKAGE_NAME@
 PACKAGE_STRING = @PACKAGE_STRING@
@@ -287,7 +288,7 @@ htmldir = @htmldir@
 includedir = @includedir@
 infodir = @infodir@
 install_sh = @install_sh@
-libdir = $(prefix)/lib/dictionary
+libdir = $(prefix)/lib64/@PACKAGENAME@/dictionary
 libexecdir = @libexecdir@
 localedir = @localedir@
 localstatedir = @localstatedir@
@@ -313,8 +314,8 @@ lib_LTLIBRARIES = libgs_dictionary.la
 libgs_dictionary_la_SOURCES = dictionary.c
 libgs_dictionary_la_CFLAGS = -g -I./
 
-# 安装头文件到 {$prefix}/include/dictionary/ 下
-dictionaryincludedir = $(includedir)/dictionary
+# 安装头文件到 {$prefix}/include/libgs/dictionary/ 下
+dictionaryincludedir = $(includedir)/@PACKAGENAME@/dictionary
 dictionaryinclude_HEADERS = dictionary.h
 all: all-am
 

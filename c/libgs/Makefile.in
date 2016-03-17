@@ -238,6 +238,7 @@ OBJEXT = @OBJEXT@
 OTOOL = @OTOOL@
 OTOOL64 = @OTOOL64@
 PACKAGE = @PACKAGE@
+PACKAGENAME = @PACKAGENAME@
 PACKAGE_BUGREPORT = @PACKAGE_BUGREPORT@
 PACKAGE_NAME = @PACKAGE_NAME@
 PACKAGE_STRING = @PACKAGE_STRING@
@@ -304,9 +305,6 @@ top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 AUTOMAKE_OPTIONS = foreign
-
-# 拷贝头文件到{$prefix}/include/下
-#include_HEADERS=base64/base64.h confparser/confparser.h confparser/dictionary.h
 SUBDIRS = base64 confparser ctapi_mc dictionary ctapi_mysql hashmap libmfile libstralloc utf8str ctapi_curl
 all: all-recursive
 
@@ -765,6 +763,12 @@ uninstall-am:
 	mostlyclean mostlyclean-generic mostlyclean-libtool pdf pdf-am \
 	ps ps-am tags tags-am uninstall uninstall-am
 
+
+# 拷贝头文件到{$prefix}/include/下
+#include_HEADERS=base64/base64.h confparser/confparser.h confparser/dictionary.h
+
+# 是否编译 ctapi_mc
+@BUILD_ctapi_mc_TRUE@	CTAPI_MC=ctapi_mc
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

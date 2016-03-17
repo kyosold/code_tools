@@ -243,6 +243,7 @@ OBJEXT = @OBJEXT@
 OTOOL = @OTOOL@
 OTOOL64 = @OTOOL64@
 PACKAGE = @PACKAGE@
+PACKAGENAME = @PACKAGENAME@
 PACKAGE_BUGREPORT = @PACKAGE_BUGREPORT@
 PACKAGE_NAME = @PACKAGE_NAME@
 PACKAGE_STRING = @PACKAGE_STRING@
@@ -290,8 +291,8 @@ includedir = @includedir@
 infodir = @infodir@
 install_sh = @install_sh@
 
-# 拷贝库文件到{$prefix}/lib/confparser/下
-libdir = $(prefix)/lib/confparser
+# 拷贝库文件到{$prefix}/lib64/libgs/confparser/下
+libdir = $(prefix)/lib64/@PACKAGENAME@/confparser
 libexecdir = @libexecdir@
 localedir = @localedir@
 localstatedir = @localstatedir@
@@ -317,8 +318,8 @@ lib_LTLIBRARIES = libgs_confparser.la
 libgs_confparser_la_SOURCES = iniparser.c dictionary.c confparser.c
 libgs_confparser_la_CFLAGS = -g -I./
 
-# 拷贝头文件到{$prefix}/include/confparser/下
-confparserincludedir = $(includedir)/confparser
+# 拷贝头文件到{$prefix}/include/libgs/confparser/下
+confparserincludedir = $(includedir)/@PACKAGENAME@/confparser
 confparserinclude_HEADERS = iniparser.h dictionary.h confparser.h
 all: all-am
 

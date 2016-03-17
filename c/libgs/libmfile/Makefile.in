@@ -240,6 +240,7 @@ OBJEXT = @OBJEXT@
 OTOOL = @OTOOL@
 OTOOL64 = @OTOOL64@
 PACKAGE = @PACKAGE@
+PACKAGENAME = @PACKAGENAME@
 PACKAGE_BUGREPORT = @PACKAGE_BUGREPORT@
 PACKAGE_NAME = @PACKAGE_NAME@
 PACKAGE_STRING = @PACKAGE_STRING@
@@ -286,7 +287,7 @@ htmldir = @htmldir@
 includedir = @includedir@
 infodir = @infodir@
 install_sh = @install_sh@
-libdir = $(prefix)/lib/mfile
+libdir = $(prefix)/lib64/@PACKAGENAME@/mfile
 libexecdir = @libexecdir@
 localedir = @localedir@
 localstatedir = @localstatedir@
@@ -312,8 +313,8 @@ lib_LTLIBRARIES = libgs_mfile.la
 libgs_mfile_la_SOURCES = mfile.c
 libgs_mfile_la_CFLAGS = -g -I./
 
-# 安装头文件到 {$prefix}/include/mfile/ 下
-mfileincludedir = $(includedir)/mfile
+# 安装头文件到 {$prefix}/include/libgs/mfile/ 下
+mfileincludedir = $(includedir)/@PACKAGENAME@/mfile
 mfileinclude_HEADERS = mfile.h
 all: all-am
 
