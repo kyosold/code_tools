@@ -120,9 +120,10 @@ am__installdirs = "$(DESTDIR)$(libdir)" \
 	"$(DESTDIR)$(ctapimcincludedir)"
 LTLIBRARIES = $(lib_LTLIBRARIES)
 libgs_ctapi_mc_la_LIBADD =
-am__libgs_ctapi_mc_la_SOURCES_DIST = ctapi_mc.c ctapi_mc.h
+am__libgs_ctapi_mc_la_SOURCES_DIST = ctapi_mc.c ctlog.c
 am_libgs_ctapi_mc_la_OBJECTS =  \
-	libgs_ctapi_mc_la-ctapi_mc.lo
+	libgs_ctapi_mc_la-ctapi_mc.lo \
+	libgs_ctapi_mc_la-ctlog.lo
 libgs_ctapi_mc_la_OBJECTS = $(am_libgs_ctapi_mc_la_OBJECTS)
 AM_V_lt = $(am__v_lt_$(V))
 am__v_lt_ = $(am__v_lt_$(AM_DEFAULT_VERBOSITY))
@@ -174,7 +175,7 @@ am__can_run_installinfo = \
     n|no|NO) false;; \
     *) (install-info --version) >/dev/null 2>&1;; \
   esac
-am__ctapimcinclude_HEADERS_DIST = ctapi_mc.h
+am__ctapimcinclude_HEADERS_DIST = ctapi_mc.h ctlog.h
 HEADERS = $(ctapimcinclude_HEADERS)
 am__tagged_files = $(HEADERS) $(SOURCES) $(TAGS_FILES) $(LISP)
 # Read a list of newline-separated strings from the standard input,
@@ -300,7 +301,7 @@ mandir = ${datarootdir}/man
 mkdir_p = $(MKDIR_P)
 oldincludedir = /usr/include
 pdfdir = ${docdir}
-prefix = /usr/local
+prefix = /usr/local/libgs
 program_transform_name = s,x,x,
 psdir = ${docdir}
 sbindir = ${exec_prefix}/sbin
@@ -315,12 +316,12 @@ AUTOMAKE_OPTIONS = foreign
 
 # [动态库]
 lib_LTLIBRARIES = libgs_ctapi_mc.la
-libgs_ctapi_mc_la_SOURCES = ctapi_mc.c ctapi_mc.h
+libgs_ctapi_mc_la_SOURCES = ctapi_mc.c ctlog.c
 libgs_ctapi_mc_la_CFLAGS = -g -I./
 
 # 安装头文件到 {$prefix}/include/libgs/ctapi_mc/ 下
 ctapimcincludedir = $(includedir)/libgs/ctapi_mc
-ctapimcinclude_HEADERS = ctapi_mc.h
+ctapimcinclude_HEADERS = ctapi_mc.h ctlog.h
 all: all-am
 
 .SUFFIXES:
@@ -401,6 +402,7 @@ distclean-compile:
 	-rm -f *.tab.c
 
 include ./$(DEPDIR)/libgs_ctapi_mc_la-ctapi_mc.Plo
+include ./$(DEPDIR)/libgs_ctapi_mc_la-ctlog.Plo
 
 .c.o:
 	$(AM_V_CC)$(COMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
@@ -429,6 +431,13 @@ libgs_ctapi_mc_la-ctapi_mc.lo: ctapi_mc.c
 #	$(AM_V_CC)source='ctapi_mc.c' object='libgs_ctapi_mc_la-ctapi_mc.lo' libtool=yes \
 #	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
 #	$(AM_V_CC_no)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgs_ctapi_mc_la_CFLAGS) $(CFLAGS) -c -o libgs_ctapi_mc_la-ctapi_mc.lo `test -f 'ctapi_mc.c' || echo '$(srcdir)/'`ctapi_mc.c
+
+libgs_ctapi_mc_la-ctlog.lo: ctlog.c
+	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgs_ctapi_mc_la_CFLAGS) $(CFLAGS) -MT libgs_ctapi_mc_la-ctlog.lo -MD -MP -MF $(DEPDIR)/libgs_ctapi_mc_la-ctlog.Tpo -c -o libgs_ctapi_mc_la-ctlog.lo `test -f 'ctlog.c' || echo '$(srcdir)/'`ctlog.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/libgs_ctapi_mc_la-ctlog.Tpo $(DEPDIR)/libgs_ctapi_mc_la-ctlog.Plo
+#	$(AM_V_CC)source='ctlog.c' object='libgs_ctapi_mc_la-ctlog.lo' libtool=yes \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgs_ctapi_mc_la_CFLAGS) $(CFLAGS) -c -o libgs_ctapi_mc_la-ctlog.lo `test -f 'ctlog.c' || echo '$(srcdir)/'`ctlog.c
 
 mostlyclean-libtool:
 	-rm -f *.lo

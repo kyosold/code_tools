@@ -10,6 +10,12 @@ libgs_ctapi_curl_la_CFLAGS=-g -I./
 ctapimcincludedir=$(includedir)/@PACKAGENAME@/ctapi_curl
 ctapimcinclude_HEADERS=ctapi_curl.h
 
+# 安装证书文件到 ($prefix}/share/libgs/ctapi_curl/ 下
+ctapimcdatadir=$(datarootdir)/@PACKAGENAME@/ctapi_curl
+ctapimcdata_DATA=cacert.pem
+
+EXTRA_DIST=$(ctapimcdata_DATA)
+
 endif
 
 libdir=$(prefix)/lib64/@PACKAGENAME@/ctapi_curl

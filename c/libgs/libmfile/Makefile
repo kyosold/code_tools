@@ -295,7 +295,7 @@ mandir = ${datarootdir}/man
 mkdir_p = $(MKDIR_P)
 oldincludedir = /usr/include
 pdfdir = ${docdir}
-prefix = /usr/local
+prefix = /usr/local/libgs
 program_transform_name = s,x,x,
 psdir = ${docdir}
 sbindir = ${exec_prefix}/sbin
@@ -315,7 +315,7 @@ libgs_mfile_la_CFLAGS = -g -I./
 
 # 安装头文件到 {$prefix}/include/libgs/mfile/ 下
 mfileincludedir = $(includedir)/libgs/mfile
-mfileinclude_HEADERS = mfile.h
+mfileinclude_HEADERS = mfile.h queue.h
 all: all-am
 
 .SUFFIXES:
