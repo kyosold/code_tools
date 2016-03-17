@@ -10,7 +10,8 @@ AM_INIT_AUTOMAKE([foreign -Wall -Werror])
 # Checks for programs.
 AC_PROG_CC
 
-# --with-ctapi_mc
+
+# --with-ctapi_mc ----------
 AC_ARG_WITH(
 	[ctapi_mc],
 	[AS_HELP_STRING([--with-ctapi_mc], [Enable ctapi_mc Library])],
@@ -23,7 +24,7 @@ if test "x$zmq_ctapi_mc" == "xyes"; then
 	AC_CHECK_LIB([memcached], [memcached_set], [], [AC_MSG_ERROR([Could not find library -lmemcached])])
 fi
 
-# --with-ctapi_mysql
+# --with-ctapi_mysql -------
 AC_ARG_WITH(
 	[ctapi_mysql],
 	[AS_HELP_STRING([--with-ctapi_mysql], [Enable ctapi_mysql Library])],
@@ -35,8 +36,22 @@ if test "x$zmq_ctapi_mysql" == "xyes"; then
 	AC_CHECK_LIB([mysqlclient], [mysql_init], [], [AC_MSG_ERROR([Could not find library -lmysqlclient])])
 fi
 
+# --with-ctapi_curl --------
+AC_ARG_WITH(
+	[ctapi_curl],
+	[AS_HELP_STRING([--with-ctapi_curl], [Enable ctapi_curl Library])],
+	[zmq_ctapi_curl="yes"],
+	[]
+)
+# Check curl libraries
+if test "x$zmq_ctapi_curl" == "xyes"; then
+	AC_CHECK_LIB([curl], [curl_easy_init], [], [AC_MSG_ERROR([Could not find library -lcurl])])
+fi
+
+
 AM_CONDITIONAL(BUILD_ctapi_mc, test "x$zmq_ctapi_mc" == "xyes")
 AM_CONDITIONAL(BUILD_ctapi_mysql, test "x$zmq_ctapi_mysql" == "xyes")
+AM_CONDITIONAL(BUILD_ctapi_curl, test "x$zmq_ctapi_curl" == "xyes")
 
 AC_PROG_LIBTOOL
 
@@ -61,5 +76,6 @@ AC_OUTPUT([Makefile
 		hashmap/Makefile 
 		libmfile/Makefile 
 		libstralloc/Makefile 
-		utf8str/Makefile
+		utf8str/Makefile 
+		ctapi_curl/Makefile
 		])

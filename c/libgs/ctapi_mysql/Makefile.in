@@ -318,7 +318,7 @@ AUTOMAKE_OPTIONS = foreign
 @BUILD_ctapi_mysql_TRUE@libgs_ctapi_mysql_la_SOURCES = ctapi_mysql.c ctapi_mysql.h
 @BUILD_ctapi_mysql_TRUE@libgs_ctapi_mysql_la_CFLAGS = -g -I./
 
-# 安装头文件到 {$prefix}/include/base64/ 下
+# 安装头文件到 {$prefix}/include/ctapi_mysql/ 下
 @BUILD_ctapi_mysql_TRUE@ctapimysqlincludedir = $(includedir)/ctapi_mysql
 @BUILD_ctapi_mysql_TRUE@ctapimysqlinclude_HEADERS = ctapi_mysql.h
 all: all-am

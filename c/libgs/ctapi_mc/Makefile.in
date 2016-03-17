@@ -317,7 +317,7 @@ AUTOMAKE_OPTIONS = foreign
 @BUILD_ctapi_mc_TRUE@libgs_ctapi_mc_la_SOURCES = ctapi_mc.c ctapi_mc.h
 @BUILD_ctapi_mc_TRUE@libgs_ctapi_mc_la_CFLAGS = -g -I./
 
-# 安装头文件到 {$prefix}/include/base64/ 下
+# 安装头文件到 {$prefix}/include/ctapi_mc/ 下
 @BUILD_ctapi_mc_TRUE@ctapimcincludedir = $(includedir)/ctapi_mc
 @BUILD_ctapi_mc_TRUE@ctapimcinclude_HEADERS = ctapi_mc.h
 all: all-am
