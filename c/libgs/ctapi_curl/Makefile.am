@@ -1,6 +1,5 @@
 AUTOMAKE_OPTIONS=foreign
 
-if BUILD_ctapi_curl
 # [动态库]
 lib_LTLIBRARIES=libgs_ctapi_curl.la
 libgs_ctapi_curl_la_SOURCES=ctapi_curl.c ctapi_curl.h
@@ -14,8 +13,6 @@ ctapimcinclude_HEADERS=ctapi_curl.h
 ctapimcdatadir=$(datarootdir)/@PACKAGENAME@/ctapi_curl
 ctapimcdata_DATA=cacert.pem
 
-EXTRA_DIST=$(ctapimcdata_DATA)
-
-endif
+EXTRA_DIST=$(ctapimcdata_DATA) sample.c
 
 libdir=$(prefix)/lib64/@PACKAGENAME@/ctapi_curl

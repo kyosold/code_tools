@@ -393,7 +393,7 @@ on `(hostname || uname -n) 2>/dev/null | sed 1q`
 "
 
 # Files that config.status was made for.
-config_files=" Makefile base64/Makefile confparser/Makefile dictionary/Makefile ctapi_mc/Makefile ctapi_mysql/Makefile hashmap/Makefile libmfile/Makefile libstralloc/Makefile utf8str/Makefile ctapi_curl/Makefile"
+config_files=" Makefile base64/Makefile confparser/Makefile dictionary/Makefile ctapi_mc/Makefile ctapi_mysql/Makefile hashmap/Makefile libmfile/Makefile libstralloc/Makefile utf8str/Makefile ctapi_curl/Makefile ctlog/Makefile"
 config_commands=" depfiles libtool"
 
 ac_cs_usage="\
@@ -658,7 +658,7 @@ finish_cmds='PATH="\$PATH:/sbin" ldconfig -n $libdir'
 finish_eval=''
 hardcode_into_libs='yes'
 sys_lib_search_path_spec='/usr/lib/gcc/x86_64-redhat-linux/4.8.5 /usr/lib64 /lib64 '
-sys_lib_dlsearch_path_spec='/lib64 /usr/lib64 /lib /usr/lib /usr/lib64/dyninst /usr/lib64/mysql '
+sys_lib_dlsearch_path_spec='/lib64 /usr/lib64 /lib /usr/lib /usr/lib64/dyninst /usr/lib64/mysql /usr/local/libev/lib/ /usr/local/lib64/libgs/confparser/ '
 hardcode_action='immediate'
 enable_dlopen='unknown'
 enable_dlopen_self='unknown'
@@ -740,6 +740,7 @@ do
     "libstralloc/Makefile") CONFIG_FILES="$CONFIG_FILES libstralloc/Makefile" ;;
     "utf8str/Makefile") CONFIG_FILES="$CONFIG_FILES utf8str/Makefile" ;;
     "ctapi_curl/Makefile") CONFIG_FILES="$CONFIG_FILES ctapi_curl/Makefile" ;;
+    "ctlog/Makefile") CONFIG_FILES="$CONFIG_FILES ctlog/Makefile" ;;
 
   *) as_fn_error $? "invalid argument: \`$ac_config_target'" "$LINENO" 5;;
   esac

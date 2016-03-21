@@ -1,7 +1,5 @@
 AUTOMAKE_OPTIONS=foreign
 
-if BUILD_ctapi_mc
-
 # [动态库]
 lib_LTLIBRARIES=libgs_ctapi_mc.la
 libgs_ctapi_mc_la_SOURCES=ctapi_mc.c ctlog.c
@@ -11,6 +9,6 @@ libgs_ctapi_mc_la_CFLAGS=-g -I./
 ctapimcincludedir=$(includedir)/@PACKAGENAME@/ctapi_mc
 ctapimcinclude_HEADERS=ctapi_mc.h ctlog.h
 
-endif
-
 libdir=$(prefix)/lib64/@PACKAGENAME@/ctapi_mc
+
+EXTRA_DIST=sample.c linux.mk

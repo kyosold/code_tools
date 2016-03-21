@@ -317,6 +317,7 @@ libgs_utf8str_la_CFLAGS = -g -I./
 # 安装头文件到 {$prefix}/include/libgs/utf8str/ 下
 utf8strincludedir = $(includedir)/@PACKAGENAME@/utf8str
 utf8strinclude_HEADERS = utf8str.h
+EXTRA_DIST = sample.c
 all: all-am
 
 .SUFFIXES:

@@ -317,6 +317,7 @@ libgs_hashmap_la_CFLAGS = -g -I./
 # 安装头文件到 {$prefix}/include/libgs/hashmap/ 下
 hashmapincludedir = $(includedir)/@PACKAGENAME@/hashmap
 hashmapinclude_HEADERS = hashmap.h
+EXTRA_DIST = sample.c
 all: all-am
 
 .SUFFIXES:

@@ -146,7 +146,8 @@ am__define_uniq_tagged_files = \
 ETAGS = etags
 CTAGS = ctags
 CSCOPE = cscope
-DIST_SUBDIRS = $(SUBDIRS)
+DIST_SUBDIRS = base64 confparser ctapi_mc dictionary ctapi_mysql \
+	hashmap libmfile libstralloc utf8str ctapi_curl ctlog
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 distdir = $(PACKAGE)-$(VERSION)
 top_distdir = $(distdir)
@@ -305,7 +306,16 @@ top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 AUTOMAKE_OPTIONS = foreign
-SUBDIRS = base64 confparser ctapi_mc dictionary ctapi_mysql hashmap libmfile libstralloc utf8str ctapi_curl
+
+# 是否编译 ctapi_mc
+@BUILD_ctapi_mc_TRUE@USE_MC = ctapi_mc
+
+# 编译 ctapi_mysql
+@BUILD_ctapi_mysql_TRUE@USE_MYSQL = ctapi_mysql
+
+# 编译 ctapi_curl
+@BUILD_ctapi_curl_TRUE@USE_CURL = ctapi_curl
+SUBDIRS = base64 confparser $(USE_MC) dictionary $(USE_MYSQL) hashmap libmfile libstralloc utf8str $(USE_CURL) ctlog
 all: all-recursive
 
 .SUFFIXES:
@@ -763,12 +773,6 @@ uninstall-am:
 	mostlyclean mostlyclean-generic mostlyclean-libtool pdf pdf-am \
 	ps ps-am tags tags-am uninstall uninstall-am
 
-
-# 拷贝头文件到{$prefix}/include/下
-#include_HEADERS=base64/base64.h confparser/confparser.h confparser/dictionary.h
-
-# 是否编译 ctapi_mc
-@BUILD_ctapi_mc_TRUE@	CTAPI_MC=ctapi_mc
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

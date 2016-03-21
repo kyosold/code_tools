@@ -10,3 +10,5 @@ dictionaryincludedir=$(includedir)/@PACKAGENAME@/dictionary
 dictionaryinclude_HEADERS=dictionary.h
 
 libdir=$(prefix)/lib64/@PACKAGENAME@/dictionary
+
+EXTRA_DIST=sample.c

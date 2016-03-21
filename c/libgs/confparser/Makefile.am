@@ -11,3 +11,5 @@ confparserinclude_HEADERS=iniparser.h dictionary.h confparser.h
 
 # 拷贝库文件到{$prefix}/lib64/libgs/confparser/下
 libdir=$(prefix)/lib64/@PACKAGENAME@/confparser
+
+EXTRA_DIST=sample.c sample.ini

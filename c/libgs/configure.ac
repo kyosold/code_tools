@@ -78,5 +78,6 @@ AC_OUTPUT([Makefile
 		libmfile/Makefile 
 		libstralloc/Makefile 
 		utf8str/Makefile 
-		ctapi_curl/Makefile
+		ctapi_curl/Makefile 
+		ctlog/Makefile
 		])

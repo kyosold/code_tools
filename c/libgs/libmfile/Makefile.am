@@ -10,3 +10,5 @@ mfileincludedir=$(includedir)/@PACKAGENAME@/mfile
 mfileinclude_HEADERS=mfile.h queue.h
 
 libdir=$(prefix)/lib64/@PACKAGENAME@/mfile
+
+EXTRA_DIST=sample.c linux.mk

@@ -317,6 +317,7 @@ libgs_dictionary_la_CFLAGS = -g -I./
 # 安装头文件到 {$prefix}/include/libgs/dictionary/ 下
 dictionaryincludedir = $(includedir)/libgs/dictionary
 dictionaryinclude_HEADERS = dictionary.h
+EXTRA_DIST = sample.c
 all: all-am
 
 .SUFFIXES:

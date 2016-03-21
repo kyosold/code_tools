@@ -81,7 +81,7 @@ build_triplet = x86_64-unknown-linux-gnu
 host_triplet = x86_64-unknown-linux-gnu
 subdir = ctapi_mc
 DIST_COMMON = $(srcdir)/Makefile.in $(srcdir)/Makefile.am \
-	$(top_srcdir)/depcomp $(am__ctapimcinclude_HEADERS_DIST)
+	$(top_srcdir)/depcomp $(ctapimcinclude_HEADERS)
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/configure.ac
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
@@ -120,9 +120,7 @@ am__installdirs = "$(DESTDIR)$(libdir)" \
 	"$(DESTDIR)$(ctapimcincludedir)"
 LTLIBRARIES = $(lib_LTLIBRARIES)
 libgs_ctapi_mc_la_LIBADD =
-am__libgs_ctapi_mc_la_SOURCES_DIST = ctapi_mc.c ctlog.c
-am_libgs_ctapi_mc_la_OBJECTS =  \
-	libgs_ctapi_mc_la-ctapi_mc.lo \
+am_libgs_ctapi_mc_la_OBJECTS = libgs_ctapi_mc_la-ctapi_mc.lo \
 	libgs_ctapi_mc_la-ctlog.lo
 libgs_ctapi_mc_la_OBJECTS = $(am_libgs_ctapi_mc_la_OBJECTS)
 AM_V_lt = $(am__v_lt_$(V))
@@ -133,7 +131,6 @@ libgs_ctapi_mc_la_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
 	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CCLD) \
 	$(libgs_ctapi_mc_la_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) $(LDFLAGS) \
 	-o $@
-am_libgs_ctapi_mc_la_rpath = -rpath $(libdir)
 AM_V_P = $(am__v_P_$(V))
 am__v_P_ = $(am__v_P_$(AM_DEFAULT_VERBOSITY))
 am__v_P_0 = false
@@ -169,13 +166,12 @@ am__v_CCLD_ = $(am__v_CCLD_$(AM_DEFAULT_VERBOSITY))
 am__v_CCLD_0 = @echo "  CCLD    " $@;
 am__v_CCLD_1 = 
 SOURCES = $(libgs_ctapi_mc_la_SOURCES)
-DIST_SOURCES = $(am__libgs_ctapi_mc_la_SOURCES_DIST)
+DIST_SOURCES = $(libgs_ctapi_mc_la_SOURCES)
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
     n|no|NO) false;; \
     *) (install-info --version) >/dev/null 2>&1;; \
   esac
-am__ctapimcinclude_HEADERS_DIST = ctapi_mc.h ctlog.h
 HEADERS = $(ctapimcinclude_HEADERS)
 am__tagged_files = $(HEADERS) $(SOURCES) $(TAGS_FILES) $(LISP)
 # Read a list of newline-separated strings from the standard input,
@@ -322,6 +318,7 @@ libgs_ctapi_mc_la_CFLAGS = -g -I./
 # 安装头文件到 {$prefix}/include/libgs/ctapi_mc/ 下
 ctapimcincludedir = $(includedir)/libgs/ctapi_mc
 ctapimcinclude_HEADERS = ctapi_mc.h ctlog.h
+EXTRA_DIST = sample.c linux.mk
 all: all-am
 
 .SUFFIXES:
@@ -393,7 +390,7 @@ clean-libLTLIBRARIES:
 	}
 
 libgs_ctapi_mc.la: $(libgs_ctapi_mc_la_OBJECTS) $(libgs_ctapi_mc_la_DEPENDENCIES) $(EXTRA_libgs_ctapi_mc_la_DEPENDENCIES) 
-	$(AM_V_CCLD)$(libgs_ctapi_mc_la_LINK) $(am_libgs_ctapi_mc_la_rpath) $(libgs_ctapi_mc_la_OBJECTS) $(libgs_ctapi_mc_la_LIBADD) $(LIBS)
+	$(AM_V_CCLD)$(libgs_ctapi_mc_la_LINK) -rpath $(libdir) $(libgs_ctapi_mc_la_OBJECTS) $(libgs_ctapi_mc_la_LIBADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)

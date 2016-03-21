@@ -316,6 +316,7 @@ libgs_mfile_la_CFLAGS = -g -I./
 # 安装头文件到 {$prefix}/include/libgs/mfile/ 下
 mfileincludedir = $(includedir)/@PACKAGENAME@/mfile
 mfileinclude_HEADERS = mfile.h queue.h
+EXTRA_DIST = sample.c linux.mk
 all: all-am
 
 .SUFFIXES:

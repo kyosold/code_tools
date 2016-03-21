@@ -1,11 +1,19 @@
 AUTOMAKE_OPTIONS=foreign
 
-# 拷贝头文件到{$prefix}/include/下
-#include_HEADERS=base64/base64.h confparser/confparser.h confparser/dictionary.h
-
 # 是否编译 ctapi_mc
 if BUILD_ctapi_mc
-	CTAPI_MC=ctapi_mc
+USE_MC=ctapi_mc
 endif
 
-SUBDIRS=base64 confparser ctapi_mc dictionary ctapi_mysql hashmap libmfile libstralloc utf8str ctapi_curl
+# 编译 ctapi_mysql
+if BUILD_ctapi_mysql
+USE_MYSQL=ctapi_mysql
+endif
+
+# 编译 ctapi_curl
+if BUILD_ctapi_curl
+USE_CURL=ctapi_curl
+endif
+
+
+SUBDIRS=base64 confparser $(USE_MC) dictionary $(USE_MYSQL) hashmap libmfile libstralloc utf8str $(USE_CURL) ctlog

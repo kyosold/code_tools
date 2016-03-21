@@ -19,3 +19,5 @@ base64include_HEADERS=base64.h
 
 # 安装库文件到 {$prefix}/lib64/libgs/base64/ 下
 libdir=$(prefix)/lib64/@PACKAGENAME@/base64
+
+EXTRA_DIST=sample.c

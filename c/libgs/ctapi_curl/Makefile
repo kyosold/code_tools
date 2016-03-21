@@ -82,7 +82,7 @@ build_triplet = x86_64-unknown-linux-gnu
 host_triplet = x86_64-unknown-linux-gnu
 subdir = ctapi_curl
 DIST_COMMON = $(srcdir)/Makefile.in $(srcdir)/Makefile.am \
-	$(top_srcdir)/depcomp $(am__ctapimcinclude_HEADERS_DIST)
+	$(top_srcdir)/depcomp $(ctapimcinclude_HEADERS)
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/configure.ac
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
@@ -121,9 +121,7 @@ am__installdirs = "$(DESTDIR)$(libdir)" "$(DESTDIR)$(ctapimcdatadir)" \
 	"$(DESTDIR)$(ctapimcincludedir)"
 LTLIBRARIES = $(lib_LTLIBRARIES)
 libgs_ctapi_curl_la_LIBADD =
-am__libgs_ctapi_curl_la_SOURCES_DIST = ctapi_curl.c ctapi_curl.h
-am_libgs_ctapi_curl_la_OBJECTS =  \
-	libgs_ctapi_curl_la-ctapi_curl.lo
+am_libgs_ctapi_curl_la_OBJECTS = libgs_ctapi_curl_la-ctapi_curl.lo
 libgs_ctapi_curl_la_OBJECTS = $(am_libgs_ctapi_curl_la_OBJECTS)
 AM_V_lt = $(am__v_lt_$(V))
 am__v_lt_ = $(am__v_lt_$(AM_DEFAULT_VERBOSITY))
@@ -133,7 +131,6 @@ libgs_ctapi_curl_la_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
 	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CCLD) \
 	$(libgs_ctapi_curl_la_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) \
 	$(LDFLAGS) -o $@
-am_libgs_ctapi_curl_la_rpath = -rpath $(libdir)
 AM_V_P = $(am__v_P_$(V))
 am__v_P_ = $(am__v_P_$(AM_DEFAULT_VERBOSITY))
 am__v_P_0 = false
@@ -169,14 +166,13 @@ am__v_CCLD_ = $(am__v_CCLD_$(AM_DEFAULT_VERBOSITY))
 am__v_CCLD_0 = @echo "  CCLD    " $@;
 am__v_CCLD_1 = 
 SOURCES = $(libgs_ctapi_curl_la_SOURCES)
-DIST_SOURCES = $(am__libgs_ctapi_curl_la_SOURCES_DIST)
+DIST_SOURCES = $(libgs_ctapi_curl_la_SOURCES)
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
     n|no|NO) false;; \
     *) (install-info --version) >/dev/null 2>&1;; \
   esac
 DATA = $(ctapimcdata_DATA)
-am__ctapimcinclude_HEADERS_DIST = ctapi_curl.h
 HEADERS = $(ctapimcinclude_HEADERS)
 am__tagged_files = $(HEADERS) $(SOURCES) $(TAGS_FILES) $(LISP)
 # Read a list of newline-separated strings from the standard input,
@@ -327,7 +323,7 @@ ctapimcinclude_HEADERS = ctapi_curl.h
 # 安装证书文件到 ($prefix}/share/libgs/ctapi_curl/ 下
 ctapimcdatadir = $(datarootdir)/libgs/ctapi_curl
 ctapimcdata_DATA = cacert.pem
-EXTRA_DIST = $(ctapimcdata_DATA)
+EXTRA_DIST = $(ctapimcdata_DATA) sample.c
 all: all-am
 
 .SUFFIXES:
@@ -399,7 +395,7 @@ clean-libLTLIBRARIES:
 	}
 
 libgs_ctapi_curl.la: $(libgs_ctapi_curl_la_OBJECTS) $(libgs_ctapi_curl_la_DEPENDENCIES) $(EXTRA_libgs_ctapi_curl_la_DEPENDENCIES) 
-	$(AM_V_CCLD)$(libgs_ctapi_curl_la_LINK) $(am_libgs_ctapi_curl_la_rpath) $(libgs_ctapi_curl_la_OBJECTS) $(libgs_ctapi_curl_la_LIBADD) $(LIBS)
+	$(AM_V_CCLD)$(libgs_ctapi_curl_la_LINK) -rpath $(libdir) $(libgs_ctapi_curl_la_OBJECTS) $(libgs_ctapi_curl_la_LIBADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)

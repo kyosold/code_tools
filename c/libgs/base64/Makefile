@@ -326,6 +326,7 @@ libgs_base64_la_CFLAGS = -g -I./
 # 安装该包到 ($prefix}/include/libgs/base64/ 下
 base64includedir = $(includedir)/libgs/base64
 base64include_HEADERS = base64.h
+EXTRA_DIST = sample.c
 all: all-am
 
 .SUFFIXES:

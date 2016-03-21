@@ -317,6 +317,7 @@ libgs_stralloc_la_CFLAGS = -g -I./
 # 安装头文件到 {$prefix}/include/libgs/stralloc/ 下
 strallocincludedir = $(includedir)/libgs/stralloc
 strallocinclude_HEADERS = stralloc.h
+EXTRA_DIST = sample.c
 all: all-am
 
 .SUFFIXES:

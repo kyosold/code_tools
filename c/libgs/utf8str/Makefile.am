@@ -10,3 +10,5 @@ utf8strincludedir=$(includedir)/@PACKAGENAME@/utf8str
 utf8strinclude_HEADERS=utf8str.h
 
 libdir=$(prefix)/lib64/@PACKAGENAME@/utf8str
+
+EXTRA_DIST=sample.c

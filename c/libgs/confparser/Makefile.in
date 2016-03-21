@@ -321,6 +321,7 @@ libgs_confparser_la_CFLAGS = -g -I./
 # 拷贝头文件到{$prefix}/include/libgs/confparser/下
 confparserincludedir = $(includedir)/@PACKAGENAME@/confparser
 confparserinclude_HEADERS = iniparser.h dictionary.h confparser.h
+EXTRA_DIST = sample.c sample.ini
 all: all-am
 
 .SUFFIXES:
