@@ -104,8 +104,11 @@ size_t _recive_data_from_http_api(void *buffer, size_t size, size_t nmemb, void 
  *
  *  @return 0:出错 其它:正常
  */
-int submit_data_to_http(char *url, char *method, char *post_data, char *save_cookie_fs, char *send_cookie_fs, unsigned int connect_timeout, unsigned int timeout, struct curl_return_string *curl_result_t, char *error, size_t error_size)
+//int submit_data_to_http(char *url, char *method, char *post_data, char *save_cookie_fs, char *send_cookie_fs, unsigned int connect_timeout, unsigned int timeout, struct curl_result_string *curl_result_t, char *error, size_t error_size)
+int ctapi_curl_post(char *url, char *method, char *post_data, char *save_cookie_fs, char *send_cookie_fs, unsigned int connect_timeout, unsigned int timeout, struct curl_result_string *curl_result_t, char *error, size_t error_size)
 {
+	memset(curl_result_t, 0, sizeof(struct curl_result_string));	
+
     curl_global_init(CURL_GLOBAL_ALL);
 
     CURL *curl = NULL;
@@ -221,5 +224,25 @@ SUBMIT_DATA_TO_HTTP_FAIL:
 	return 0;
     
 }
+
+
+
+void ctapi_curl_free(struct curl_result_string *curl_result_t)
+{
+	if (curl_result_t->headers.str != NULL) {
+		free(curl_result_t->headers.str);
+		curl_result_t->headers.str = NULL;
+	}
+	curl_result_t->headers.len = 0; 
+	curl_result_t->headers.size = 0;
+	
+	if (curl_result_t->data.str != NULL) {
+		free(curl_result_t->data.str);
+		curl_result_t->data.str = NULL;
+	}
+	curl_result_t->data.len = 0;
+	curl_result_t->data.size = 0; 
+}
+
 
 

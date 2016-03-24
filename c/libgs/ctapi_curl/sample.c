@@ -25,17 +25,12 @@ int main(int argc, char **argv)
 	char *save_cookie_fs = NULL;
 	char *send_cookie_fs = NULL;*/
 
-	struct curl_return_string curl_return_t;
-	curl_return_t.headers.str = NULL;
-	curl_return_t.headers.len = 0;
-	curl_return_t.headers.size = 0;
-	curl_return_t.data.str = NULL;
-	curl_return_t.data.len = 0;
-	curl_return_t.data.size = 0;
+	struct curl_result_string curl_return_t;
+	memset(&curl_return_t, 0, sizeof(struct curl_result_string));
 
 	char error[1024] = {0};
 
-	int ret = submit_data_to_http(url, method, post_data, save_cookie_fs, send_cookie_fs, 10, 10, &curl_return_t, error, sizeof(error));
+	int ret = ctapi_curl_post(url, method, post_data, save_cookie_fs, send_cookie_fs, 10, 10, &curl_return_t, error, sizeof(error));
 	if (ret == 0) {
 		printf("fail:%s\n", error);
 	} else {
@@ -52,19 +47,7 @@ int main(int argc, char **argv)
 	}
 	
 
-	if (curl_return_t.headers.str != NULL) {
-		free(curl_return_t.headers.str);
-		curl_return_t.headers.str = NULL;
-	}
-	curl_return_t.headers.len = 0;
-	curl_return_t.headers.size = 0;
-
-	if (curl_return_t.data.str != NULL) {
-		free(curl_return_t.data.str);
-		curl_return_t.data.str = NULL;
-	}
-	curl_return_t.data.len = 0;
-	curl_return_t.data.size = 0;	
+	ctapi_curl_free(&curl_return_t);
 
 	return 0;
 }

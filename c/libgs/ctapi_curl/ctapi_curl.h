@@ -19,12 +19,14 @@ struct pstr_t
 	size_t size;
 };
 
-struct curl_return_string 
+struct curl_result_string 
 {
 	struct pstr_t headers;
 	struct pstr_t data;
 };
 
-int submit_data_to_http(char *url, char *method, char *post_data, char *save_cookie_fs, char *send_cookie_fs, unsigned int connect_timeout, unsigned int timeout, struct curl_return_string *curl_result_t, char *error, size_t error_size);
+int ctapi_curl_post(char *url, char *method, char *post_data, char *save_cookie_fs, char *send_cookie_fs, unsigned int connect_timeout, unsigned int timeout, struct curl_result_string *curl_result_t, char *error, size_t error_size);
+
+void ctapi_curl_free(struct curl_result_string *curl_result_t);
 
 #endif /* ctapi_curl_h */
