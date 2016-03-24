@@ -11,7 +11,7 @@
 
 int set_mc(char *mc_ip, int mc_port, int mc_timeout, char *mc_key, char *mc_value, time_t expiration);
 
-void *get_mc(char *mc_ip, int mc_port, int mc_timeout, char *mc_key);
+char *get_mc(char *mc_ip, int mc_port, int mc_timeout, char *mc_key, int *ret);
 
 int delete_mc(char *mc_ip, int mc_port, int mc_timeout, char *mc_key);
 

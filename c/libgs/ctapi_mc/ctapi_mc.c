@@ -12,6 +12,7 @@
 #include <unistd.h>
 #include <signal.h>
 #include <errno.h>
+#include <time.h>
 
 #include <libmemcached/memcached.h>
 
@@ -29,7 +30,7 @@
  *  @param mc_key     key
  *  @param mc_value   value
  *
- *  @return 0:succ  1:fail
+ *  @return 0:succ  1:notfound 2:connect fail 3:其它错误
  */
 int set_mc(char *mc_ip, int mc_port, int mc_timeout, char *mc_key, char *mc_value, time_t expiration)
 {
@@ -57,10 +58,16 @@ int set_mc(char *mc_ip, int mc_port, int mc_timeout, char *mc_key, char *mc_valu
             if (MEMCACHED_SUCCESS == mrc) {
                 log_debug("set mc key:%s val:%s succ", mc_key, mc_value);
                 ret = 0;;
-            } else {
+            } else if (MEMCACHED_NOTFOUND == mrc){
                 log_error("set mc key:%s val:%s failed:%s", mc_key, mc_value, memcached_strerror(memc, mrc));
                 ret = 1;
-            }
+            } else if (MEMCACHED_CONNECTION_FAILURE == mrc) {
+				log_error("set mc key:%s val:%s failed:%s", mc_key, mc_value, memcached_strerror(memc, mrc));
+				ret = 2;
+			} else {
+				log_error("set mc key:%s val:%s failed:%s", mc_key, mc_value, memcached_strerror(memc, mrc));
+				ret = 3;
+			}
             
             memcached_free(memc);
             return ret;
@@ -68,10 +75,11 @@ int set_mc(char *mc_ip, int mc_port, int mc_timeout, char *mc_key, char *mc_valu
     }
     
     log_error("set_to_mc:%s:%d connect fail:%s", mc_ip, mc_port, memcached_strerror(memc, mrc));
+	ret = 3;
     
     memcached_free(memc);
     
-    return 1;
+    return ret;
 }
 
 
@@ -84,10 +92,11 @@ int set_mc(char *mc_ip, int mc_port, int mc_timeout, char *mc_key, char *mc_valu
  *  @param mc_key        需要获取值的key
  *  @param mc_value      获取的结果
  *  @param mc_value_size 获取结果的buffer长度
+ *  @param flag          获取结果的flag (0:成功, 1:notfound, 2:connect fail, 3:其它错误)
  *
  *  @return NULL:失败
  */
-void *get_mc(char *mc_ip, int mc_port, int mc_timeout, char *mc_key)
+char *get_mc(char *mc_ip, int mc_port, int mc_timeout, char *mc_key, int *ret)
 {
     size_t nval = 0;
     uint32_t flag = 0;
@@ -111,9 +120,19 @@ void *get_mc(char *mc_ip, int mc_port, int mc_timeout, char *mc_key)
             result = memcached_get(memc, mc_key, strlen(mc_key), (size_t *)&nval, &flag, &mrc);
             if (MEMCACHED_SUCCESS == mrc) {
                 log_debug("get mc key:%s val:%s succ", mc_key, result);
+				*ret = 0;
+			
+			} else if (MEMCACHED_NOTFOUND == mrc) {   
+				log_debug("get mc key:%s NOT FOUND", mc_key); 
+				*ret = 1;
+
+			} else if (MEMCACHED_CONNECTION_FAILURE == mrc) {
+				log_error("set_to_mc:%s:%d connect fail:%s", mc_ip, mc_port, memcached_strerror(memc, mrc));    
+				*ret = 2;	
                 
             } else {
                 log_error("get mc key:%s ailed:%s", mc_key, memcached_strerror(memc, mrc)); 
+				*ret = 3;
             }
             
             memcached_free(memc);
@@ -123,6 +142,7 @@ void *get_mc(char *mc_ip, int mc_port, int mc_timeout, char *mc_key)
     }
     
     log_error("set_to_mc:%s:%d connect fail:%s", mc_ip, mc_port, memcached_strerror(memc, mrc));
+	*ret = 2;
     
     memcached_free(memc);
     

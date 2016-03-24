@@ -1,11 +1,10 @@
 #include <stdio.h>
 #include <string.h>
-
-#include "ctapi_mc.h"
+#include <time.h>
 #include <stdio.h>
 #include <string.h>
 
-#include "mcapi_mc.h"
+#include "ctapi_mc.h"
 
 int main(int argc, char **argv)
 {
@@ -16,8 +15,9 @@ int main(int argc, char **argv)
 	// set mc
 	char *key = "name";
     char *value = "kyosold@qq.com";
+	char expire = 0;
     
-    int succ = set_mc(mc_server, atoi(mc_port), atoi(mc_timeout), key, value);
+    int succ = set_mc(mc_server, atoi(mc_port), atoi(mc_timeout), key, value, expire);
     if (succ == 0) {
         printf("set mc succ:%s => %s\n", key, value);
     } else {
@@ -25,14 +25,25 @@ int main(int argc, char **argv)
     }
 
 	// get mc
-	char *pvalue = get_mc(mc_server, atoi(mc_port), atoi(mc_timeout), key);
+	int flag;
+	char *pvalue = get_mc(mc_server, atoi(mc_port), atoi(mc_timeout), key, &flag);
     if (pvalue) {
         printf("get mc succ:%s => %s\n", key, pvalue);
         
         free(pvalue);
         pvalue = NULL;
     } else {
-        printf("get mc fail:%s\n", key);
+		switch (flag) {
+			case 1:
+				printf("get mc fail:%s not found\n", key);
+				break;
+			case 2:
+				printf("get mc fail:%s connect fail\n", key);
+				break;
+			default:
+				printf("get mc fail:%s\n", key);
+				break;
+		}
     }
 
 	// delete mc
