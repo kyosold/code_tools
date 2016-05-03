@@ -41,6 +41,12 @@ function submit_curl_action($url, $method, $post_data = array(),  $save_cookie_f
     // 设置获取的信息以文件流的形式返回，而不是直接输出
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
     
+    // 设置连接超时
+    curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 2);
+    
+    // 设置读取返回数据的超时
+    curl_setopt($ch, CURLOPT_TIMEOUT, 2);
+    
     // ----- Exec -----
     $data = curl_exec($ch);
     
