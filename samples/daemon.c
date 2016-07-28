@@ -24,45 +24,45 @@ int daemon_init(char *chdir_path)
     if (pid1 == -1) {
         printf("fork fail\n");
         exit(1);
-	} else if (pid1 > 0) {
-	    // parent exit
-	    exit(0);
-	} 
+    } else if (pid1 > 0) {
+        // parent exit
+        exit(0);
+    } 
 
-	// 2. 独立于控制终端
-	if (setsid() == -1) {
-	    printf("setsid fail\n");
-	    exit(1);
-	}
+    // 2. 独立于控制终端
+    if (setsid() == -1) {
+        printf("setsid fail\n");
+        exit(1);
+    }
 
-	// 3. 防止子进程(组长)获取控制终端
-	pid_t pid2 = fork();
-	if (pid2 == -1) {
-	    printf("fork fail\n");
-	    exit(1);
-	} else if (pid2 > 0) {
-	    // parent exit
-	    exit(0);
-	}
+    // 3. 防止子进程(组长)获取控制终端
+    pid_t pid2 = fork();
+    if (pid2 == -1) {
+        printf("fork fail\n");
+        exit(1);
+    } else if (pid2 > 0) {
+        // parent exit
+        exit(0);
+    }
 
-	// 4. 关闭打开的文件描述符
-	int i;
-	for (i=0; i<NOFILE; i++) {
-	    close(i);
-	}
+    // 4. 关闭打开的文件描述符
+    int i;
+    for (i=0; i<NOFILE; i++) {
+        close(i);
+    }
 
-	// 5. 改变工作目录
-	if (chdir_path != NULL) {
-	    chdir(chdir_path);
-	}
+    // 5. 改变工作目录
+    if (chdir_path != NULL) {
+        chdir(chdir_path);
+    }
 
-	// 6. 清除文件创建掩码(umask)
-	umask(0);  
+    // 6. 清除文件创建掩码(umask)
+    umask(0);  
 
-	// 7. 处理信号
-	signal(SIGCHLD, SIG_IGN);
+    // 7. 处理信号
+    signal(SIGCHLD, SIG_IGN);
 
-	return(0);
+    return(0);
 }
  
 void sig_term(int signo)
