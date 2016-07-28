@@ -19,11 +19,11 @@
  
 int daemon_init(char *chdir_path)
 {
-	// 1. 后台运行
-	pid_t pid1 = fork();
-	if (pid1 == -1) {
-	    printf("fork fail\n");
-	    exit(1);
+    // 1. 后台运行
+    pid_t pid1 = fork();
+    if (pid1 == -1) {
+        printf("fork fail\n");
+        exit(1);
 	} else if (pid1 > 0) {
 	    // parent exit
 	    exit(0);
