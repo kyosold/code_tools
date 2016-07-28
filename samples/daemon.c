@@ -17,23 +17,51 @@
  
 #define PID_FILE    "/var/run/dt.pid"
  
-int daemon_init(void)
+int daemon_init(char *chdir_path)
 {
-    pid_t pid;
-    if((pid = fork()) < 0)
-    {
-        return(-1);
-    }
-    else if(pid != 0)
-    {
+	// 1. 后台运行
+	pid_t pid1 = fork();
+	if (pid1 == -1) {
+		printf("fork fail\n");
+		exit(1);
+	} else if (pid1 > 0) {
+		// parent exit
         exit(0);
     } 
-    setsid();  
-    chdir("/");  
+
+	// 2. 独立于控制终端
+	if (setsid() == -1) {
+		printf("setsid fail\n");
+		exit(1);
+	}
+
+	// 3. 防止子进程(组长)获取控制终端
+	pid_t pid2 = fork();
+	if (pid2 == -1) {
+		printf("fork fail\n");
+		exit(1);
+	} else if (pid2 > 0) {
+		// parent exit
+		exit(0);
+	}
+
+	// 4. 关闭打开的文件描述符
+	int i;
+	for (i=0; i<NOFILE; i++) {
+		close(i);
+	}
+
+	// 5. 改变工作目录
+	if (chdir_path != NULL) {
+		chdir(chdir_path);
+	}
+
+	// 6. 清除文件创建掩码(umask)
     umask(0);  
-    close(0);
-    close(1);  
-    close(2);  
+
+	// 7. 处理信号
+	signal(SIGCHLD, SIG_IGN);
+
     return(0);
 }
  
@@ -77,7 +105,8 @@ void alread_running()
  
 int main(void)
 {
-    if(daemon_init() == -1) 
+	char chg_path[] = "/usr/local/kyosold/";
+    if(daemon_init(chg_path) == -1) 
     {
         printf("can't fork self\n");
         exit(0);
