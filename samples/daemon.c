@@ -70,6 +70,7 @@ void sig_term(int signo)
 {
     if(signo == SIGTERM)
     {
+		unlink(PID_FILE);
         syslog(LOG_INFO, "program terminated."); 
         closelog(); 
         exit(0);
