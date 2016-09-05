@@ -361,7 +361,7 @@ MYSQL_RES *ct_mysql_store_result(MYSQL_CONN *handle, int options)
 
 
 /* Test Code */
-#ifndef TEST
+#ifdef TEST
 #define user "sales03@tti-mould.sinanet.com"
 #define subject "This is test subject"
 #define db_host "mysql_host"

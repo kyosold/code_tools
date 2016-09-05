@@ -15,6 +15,7 @@
 @SET_MAKE@
 
 
+
 VPATH = @srcdir@
 am__is_gnu_make = test -n '$(MAKEFILE_LIST)' && test -n '$(MAKELEVEL)'
 am__make_running_with_option = \
@@ -117,6 +118,7 @@ am__uninstall_files_from_dir = { \
          $(am__cd) "$$dir" && rm -f $$files; }; \
   }
 am__installdirs = "$(DESTDIR)$(libdir)" \
+	"$(DESTDIR)$(dictionarydatadir)" \
 	"$(DESTDIR)$(dictionaryincludedir)"
 LTLIBRARIES = $(lib_LTLIBRARIES)
 libgs_dictionary_la_LIBADD =
@@ -171,6 +173,7 @@ am__can_run_installinfo = \
     n|no|NO) false;; \
     *) (install-info --version) >/dev/null 2>&1;; \
   esac
+DATA = $(dictionarydata_DATA)
 HEADERS = $(dictionaryinclude_HEADERS)
 am__tagged_files = $(HEADERS) $(SOURCES) $(TAGS_FILES) $(LISP)
 # Read a list of newline-separated strings from the standard input,
@@ -318,6 +321,8 @@ libgs_dictionary_la_CFLAGS = -g -I./
 dictionaryincludedir = $(includedir)/@PACKAGENAME@/dictionary
 dictionaryinclude_HEADERS = dictionary.h
 EXTRA_DIST = sample.c
+dictionarydatadir = $(datarootdir)/@PACKAGENAME@/dictionary
+dictionarydata_DATA = sample.c
 all: all-am
 
 .SUFFIXES:
@@ -432,6 +437,27 @@ mostlyclean-libtool:
 
 clean-libtool:
 	-rm -rf .libs _libs
+install-dictionarydataDATA: $(dictionarydata_DATA)
+	@$(NORMAL_INSTALL)
+	@list='$(dictionarydata_DATA)'; test -n "$(dictionarydatadir)" || list=; \
+	if test -n "$$list"; then \
+	  echo " $(MKDIR_P) '$(DESTDIR)$(dictionarydatadir)'"; \
+	  $(MKDIR_P) "$(DESTDIR)$(dictionarydatadir)" || exit 1; \
+	fi; \
+	for p in $$list; do \
+	  if test -f "$$p"; then d=; else d="$(srcdir)/"; fi; \
+	  echo "$$d$$p"; \
+	done | $(am__base_list) | \
+	while read files; do \
+	  echo " $(INSTALL_DATA) $$files '$(DESTDIR)$(dictionarydatadir)'"; \
+	  $(INSTALL_DATA) $$files "$(DESTDIR)$(dictionarydatadir)" || exit $$?; \
+	done
+
+uninstall-dictionarydataDATA:
+	@$(NORMAL_UNINSTALL)
+	@list='$(dictionarydata_DATA)'; test -n "$(dictionarydatadir)" || list=; \
+	files=`for p in $$list; do echo $$p; done | sed -e 's|^.*/||'`; \
+	dir='$(DESTDIR)$(dictionarydatadir)'; $(am__uninstall_files_from_dir)
 install-dictionaryincludeHEADERS: $(dictionaryinclude_HEADERS)
 	@$(NORMAL_INSTALL)
 	@list='$(dictionaryinclude_HEADERS)'; test -n "$(dictionaryincludedir)" || list=; \
@@ -538,9 +564,9 @@ distdir: $(DISTFILES)
 	done
 check-am: all-am
 check: check-am
-all-am: Makefile $(LTLIBRARIES) $(HEADERS)
+all-am: Makefile $(LTLIBRARIES) $(DATA) $(HEADERS)
 installdirs:
-	for dir in "$(DESTDIR)$(libdir)" "$(DESTDIR)$(dictionaryincludedir)"; do \
+	for dir in "$(DESTDIR)$(libdir)" "$(DESTDIR)$(dictionarydatadir)" "$(DESTDIR)$(dictionaryincludedir)"; do \
 	  test -z "$$dir" || $(MKDIR_P) "$$dir"; \
 	done
 install: install-am
@@ -596,7 +622,8 @@ info: info-am
 
 info-am:
 
-install-data-am: install-dictionaryincludeHEADERS
+install-data-am: install-dictionarydataDATA \
+	install-dictionaryincludeHEADERS
 
 install-dvi: install-dvi-am
 
@@ -642,8 +669,8 @@ ps: ps-am
 
 ps-am:
 
-uninstall-am: uninstall-dictionaryincludeHEADERS \
-	uninstall-libLTLIBRARIES
+uninstall-am: uninstall-dictionarydataDATA \
+	uninstall-dictionaryincludeHEADERS uninstall-libLTLIBRARIES
 
 .MAKE: install-am install-strip
 
@@ -652,15 +679,16 @@ uninstall-am: uninstall-dictionaryincludeHEADERS \
 	ctags-am distclean distclean-compile distclean-generic \
 	distclean-libtool distclean-tags distdir dvi dvi-am html \
 	html-am info info-am install install-am install-data \
-	install-data-am install-dictionaryincludeHEADERS install-dvi \
-	install-dvi-am install-exec install-exec-am install-html \
-	install-html-am install-info install-info-am \
-	install-libLTLIBRARIES install-man install-pdf install-pdf-am \
-	install-ps install-ps-am install-strip installcheck \
-	installcheck-am installdirs maintainer-clean \
-	maintainer-clean-generic mostlyclean mostlyclean-compile \
-	mostlyclean-generic mostlyclean-libtool pdf pdf-am ps ps-am \
-	tags tags-am uninstall uninstall-am \
+	install-data-am install-dictionarydataDATA \
+	install-dictionaryincludeHEADERS install-dvi install-dvi-am \
+	install-exec install-exec-am install-html install-html-am \
+	install-info install-info-am install-libLTLIBRARIES \
+	install-man install-pdf install-pdf-am install-ps \
+	install-ps-am install-strip installcheck installcheck-am \
+	installdirs maintainer-clean maintainer-clean-generic \
+	mostlyclean mostlyclean-compile mostlyclean-generic \
+	mostlyclean-libtool pdf pdf-am ps ps-am tags tags-am uninstall \
+	uninstall-am uninstall-dictionarydataDATA \
 	uninstall-dictionaryincludeHEADERS uninstall-libLTLIBRARIES
 
 

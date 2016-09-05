@@ -12,3 +12,6 @@ mfileinclude_HEADERS=mfile.h queue.h
 libdir=$(prefix)/lib64/@PACKAGENAME@/mfile
 
 EXTRA_DIST=sample.c linux.mk
+
+mfiledatadir=$(datarootdir)/@PACKAGENAME@/mfile
+mfiledata_DATA=sample.c

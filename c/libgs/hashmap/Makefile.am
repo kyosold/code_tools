@@ -12,3 +12,6 @@ hashmapinclude_HEADERS=hashmap.h
 libdir=$(prefix)/lib64/@PACKAGENAME@/hashmap
 
 EXTRA_DIST=sample.c
+
+hashmapdatadir=$(datarootdir)/@PACKAGENAME@/hashmap
+hashmapdata_DATA=sample.c

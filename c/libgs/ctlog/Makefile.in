@@ -15,6 +15,7 @@
 @SET_MAKE@
 
 
+
 VPATH = @srcdir@
 am__is_gnu_make = test -n '$(MAKEFILE_LIST)' && test -n '$(MAKELEVEL)'
 am__make_running_with_option = \
@@ -116,7 +117,8 @@ am__uninstall_files_from_dir = { \
     || { echo " ( cd '$$dir' && rm -f" $$files ")"; \
          $(am__cd) "$$dir" && rm -f $$files; }; \
   }
-am__installdirs = "$(DESTDIR)$(libdir)" "$(DESTDIR)$(ctlogincludedir)"
+am__installdirs = "$(DESTDIR)$(libdir)" "$(DESTDIR)$(ctlogdatadir)" \
+	"$(DESTDIR)$(ctlogincludedir)"
 LTLIBRARIES = $(lib_LTLIBRARIES)
 libgs_ctlog_la_LIBADD =
 am_libgs_ctlog_la_OBJECTS = libgs_ctlog_la-ctlog.lo
@@ -170,6 +172,7 @@ am__can_run_installinfo = \
     n|no|NO) false;; \
     *) (install-info --version) >/dev/null 2>&1;; \
   esac
+DATA = $(ctlogdata_DATA)
 HEADERS = $(ctloginclude_HEADERS)
 am__tagged_files = $(HEADERS) $(SOURCES) $(TAGS_FILES) $(LISP)
 # Read a list of newline-separated strings from the standard input,
@@ -326,6 +329,8 @@ libgs_ctlog_la_CFLAGS = -g -I./
 ctlogincludedir = $(includedir)/@PACKAGENAME@/ctlog
 ctloginclude_HEADERS = ctlog.h
 EXTRA_DIST = sample.c
+ctlogdatadir = $(datarootdir)/@PACKAGENAME@/ctlog
+ctlogdata_DATA = sample.c
 all: all-am
 
 .SUFFIXES:
@@ -440,6 +445,27 @@ mostlyclean-libtool:
 
 clean-libtool:
 	-rm -rf .libs _libs
+install-ctlogdataDATA: $(ctlogdata_DATA)
+	@$(NORMAL_INSTALL)
+	@list='$(ctlogdata_DATA)'; test -n "$(ctlogdatadir)" || list=; \
+	if test -n "$$list"; then \
+	  echo " $(MKDIR_P) '$(DESTDIR)$(ctlogdatadir)'"; \
+	  $(MKDIR_P) "$(DESTDIR)$(ctlogdatadir)" || exit 1; \
+	fi; \
+	for p in $$list; do \
+	  if test -f "$$p"; then d=; else d="$(srcdir)/"; fi; \
+	  echo "$$d$$p"; \
+	done | $(am__base_list) | \
+	while read files; do \
+	  echo " $(INSTALL_DATA) $$files '$(DESTDIR)$(ctlogdatadir)'"; \
+	  $(INSTALL_DATA) $$files "$(DESTDIR)$(ctlogdatadir)" || exit $$?; \
+	done
+
+uninstall-ctlogdataDATA:
+	@$(NORMAL_UNINSTALL)
+	@list='$(ctlogdata_DATA)'; test -n "$(ctlogdatadir)" || list=; \
+	files=`for p in $$list; do echo $$p; done | sed -e 's|^.*/||'`; \
+	dir='$(DESTDIR)$(ctlogdatadir)'; $(am__uninstall_files_from_dir)
 install-ctlogincludeHEADERS: $(ctloginclude_HEADERS)
 	@$(NORMAL_INSTALL)
 	@list='$(ctloginclude_HEADERS)'; test -n "$(ctlogincludedir)" || list=; \
@@ -546,9 +572,9 @@ distdir: $(DISTFILES)
 	done
 check-am: all-am
 check: check-am
-all-am: Makefile $(LTLIBRARIES) $(HEADERS)
+all-am: Makefile $(LTLIBRARIES) $(DATA) $(HEADERS)
 installdirs:
-	for dir in "$(DESTDIR)$(libdir)" "$(DESTDIR)$(ctlogincludedir)"; do \
+	for dir in "$(DESTDIR)$(libdir)" "$(DESTDIR)$(ctlogdatadir)" "$(DESTDIR)$(ctlogincludedir)"; do \
 	  test -z "$$dir" || $(MKDIR_P) "$$dir"; \
 	done
 install: install-am
@@ -604,7 +630,7 @@ info: info-am
 
 info-am:
 
-install-data-am: install-ctlogincludeHEADERS
+install-data-am: install-ctlogdataDATA install-ctlogincludeHEADERS
 
 install-dvi: install-dvi-am
 
@@ -650,7 +676,8 @@ ps: ps-am
 
 ps-am:
 
-uninstall-am: uninstall-ctlogincludeHEADERS uninstall-libLTLIBRARIES
+uninstall-am: uninstall-ctlogdataDATA uninstall-ctlogincludeHEADERS \
+	uninstall-libLTLIBRARIES
 
 .MAKE: install-am install-strip
 
@@ -658,7 +685,7 @@ uninstall-am: uninstall-ctlogincludeHEADERS uninstall-libLTLIBRARIES
 	clean-libLTLIBRARIES clean-libtool cscopelist-am ctags \
 	ctags-am distclean distclean-compile distclean-generic \
 	distclean-libtool distclean-tags distdir dvi dvi-am html \
-	html-am info info-am install install-am \
+	html-am info info-am install install-am install-ctlogdataDATA \
 	install-ctlogincludeHEADERS install-data install-data-am \
 	install-dvi install-dvi-am install-exec install-exec-am \
 	install-html install-html-am install-info install-info-am \
@@ -667,7 +694,7 @@ uninstall-am: uninstall-ctlogincludeHEADERS uninstall-libLTLIBRARIES
 	installcheck-am installdirs maintainer-clean \
 	maintainer-clean-generic mostlyclean mostlyclean-compile \
 	mostlyclean-generic mostlyclean-libtool pdf pdf-am ps ps-am \
-	tags tags-am uninstall uninstall-am \
+	tags tags-am uninstall uninstall-am uninstall-ctlogdataDATA \
 	uninstall-ctlogincludeHEADERS uninstall-libLTLIBRARIES
 
 

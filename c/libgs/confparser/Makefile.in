@@ -15,6 +15,7 @@
 @SET_MAKE@
 
 
+
 VPATH = @srcdir@
 am__is_gnu_make = test -n '$(MAKEFILE_LIST)' && test -n '$(MAKELEVEL)'
 am__make_running_with_option = \
@@ -117,6 +118,7 @@ am__uninstall_files_from_dir = { \
          $(am__cd) "$$dir" && rm -f $$files; }; \
   }
 am__installdirs = "$(DESTDIR)$(libdir)" \
+	"$(DESTDIR)$(confparserdatadir)" \
 	"$(DESTDIR)$(confparserincludedir)"
 LTLIBRARIES = $(lib_LTLIBRARIES)
 libgs_confparser_la_LIBADD =
@@ -173,6 +175,7 @@ am__can_run_installinfo = \
     n|no|NO) false;; \
     *) (install-info --version) >/dev/null 2>&1;; \
   esac
+DATA = $(confparserdata_DATA)
 HEADERS = $(confparserinclude_HEADERS)
 am__tagged_files = $(HEADERS) $(SOURCES) $(TAGS_FILES) $(LISP)
 # Read a list of newline-separated strings from the standard input,
@@ -322,6 +325,8 @@ libgs_confparser_la_CFLAGS = -g -I./
 confparserincludedir = $(includedir)/@PACKAGENAME@/confparser
 confparserinclude_HEADERS = iniparser.h dictionary.h confparser.h
 EXTRA_DIST = sample.c sample.ini
+confparserdatadir = $(datarootdir)/@PACKAGENAME@/confparser
+confparserdata_DATA = sample.c sample.ini
 all: all-am
 
 .SUFFIXES:
@@ -452,6 +457,27 @@ mostlyclean-libtool:
 
 clean-libtool:
 	-rm -rf .libs _libs
+install-confparserdataDATA: $(confparserdata_DATA)
+	@$(NORMAL_INSTALL)
+	@list='$(confparserdata_DATA)'; test -n "$(confparserdatadir)" || list=; \
+	if test -n "$$list"; then \
+	  echo " $(MKDIR_P) '$(DESTDIR)$(confparserdatadir)'"; \
+	  $(MKDIR_P) "$(DESTDIR)$(confparserdatadir)" || exit 1; \
+	fi; \
+	for p in $$list; do \
+	  if test -f "$$p"; then d=; else d="$(srcdir)/"; fi; \
+	  echo "$$d$$p"; \
+	done | $(am__base_list) | \
+	while read files; do \
+	  echo " $(INSTALL_DATA) $$files '$(DESTDIR)$(confparserdatadir)'"; \
+	  $(INSTALL_DATA) $$files "$(DESTDIR)$(confparserdatadir)" || exit $$?; \
+	done
+
+uninstall-confparserdataDATA:
+	@$(NORMAL_UNINSTALL)
+	@list='$(confparserdata_DATA)'; test -n "$(confparserdatadir)" || list=; \
+	files=`for p in $$list; do echo $$p; done | sed -e 's|^.*/||'`; \
+	dir='$(DESTDIR)$(confparserdatadir)'; $(am__uninstall_files_from_dir)
 install-confparserincludeHEADERS: $(confparserinclude_HEADERS)
 	@$(NORMAL_INSTALL)
 	@list='$(confparserinclude_HEADERS)'; test -n "$(confparserincludedir)" || list=; \
@@ -558,9 +584,9 @@ distdir: $(DISTFILES)
 	done
 check-am: all-am
 check: check-am
-all-am: Makefile $(LTLIBRARIES) $(HEADERS)
+all-am: Makefile $(LTLIBRARIES) $(DATA) $(HEADERS)
 installdirs:
-	for dir in "$(DESTDIR)$(libdir)" "$(DESTDIR)$(confparserincludedir)"; do \
+	for dir in "$(DESTDIR)$(libdir)" "$(DESTDIR)$(confparserdatadir)" "$(DESTDIR)$(confparserincludedir)"; do \
 	  test -z "$$dir" || $(MKDIR_P) "$$dir"; \
 	done
 install: install-am
@@ -616,7 +642,8 @@ info: info-am
 
 info-am:
 
-install-data-am: install-confparserincludeHEADERS
+install-data-am: install-confparserdataDATA \
+	install-confparserincludeHEADERS
 
 install-dvi: install-dvi-am
 
@@ -662,8 +689,8 @@ ps: ps-am
 
 ps-am:
 
-uninstall-am: uninstall-confparserincludeHEADERS \
-	uninstall-libLTLIBRARIES
+uninstall-am: uninstall-confparserdataDATA \
+	uninstall-confparserincludeHEADERS uninstall-libLTLIBRARIES
 
 .MAKE: install-am install-strip
 
@@ -672,15 +699,16 @@ uninstall-am: uninstall-confparserincludeHEADERS \
 	ctags-am distclean distclean-compile distclean-generic \
 	distclean-libtool distclean-tags distdir dvi dvi-am html \
 	html-am info info-am install install-am \
-	install-confparserincludeHEADERS install-data install-data-am \
-	install-dvi install-dvi-am install-exec install-exec-am \
-	install-html install-html-am install-info install-info-am \
-	install-libLTLIBRARIES install-man install-pdf install-pdf-am \
-	install-ps install-ps-am install-strip installcheck \
-	installcheck-am installdirs maintainer-clean \
-	maintainer-clean-generic mostlyclean mostlyclean-compile \
-	mostlyclean-generic mostlyclean-libtool pdf pdf-am ps ps-am \
-	tags tags-am uninstall uninstall-am \
+	install-confparserdataDATA install-confparserincludeHEADERS \
+	install-data install-data-am install-dvi install-dvi-am \
+	install-exec install-exec-am install-html install-html-am \
+	install-info install-info-am install-libLTLIBRARIES \
+	install-man install-pdf install-pdf-am install-ps \
+	install-ps-am install-strip installcheck installcheck-am \
+	installdirs maintainer-clean maintainer-clean-generic \
+	mostlyclean mostlyclean-compile mostlyclean-generic \
+	mostlyclean-libtool pdf pdf-am ps ps-am tags tags-am uninstall \
+	uninstall-am uninstall-confparserdataDATA \
 	uninstall-confparserincludeHEADERS uninstall-libLTLIBRARIES
 
 

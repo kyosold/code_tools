@@ -13,3 +13,6 @@ confparserinclude_HEADERS=iniparser.h dictionary.h confparser.h
 libdir=$(prefix)/lib64/@PACKAGENAME@/confparser
 
 EXTRA_DIST=sample.c sample.ini
+
+confparserdatadir=$(datarootdir)/@PACKAGENAME@/confparser
+confparserdata_DATA=sample.c sample.ini

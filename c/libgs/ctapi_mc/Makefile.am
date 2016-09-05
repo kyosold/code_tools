@@ -12,3 +12,6 @@ ctapimcinclude_HEADERS=ctapi_mc.h ctlog.h
 libdir=$(prefix)/lib64/@PACKAGENAME@/ctapi_mc
 
 EXTRA_DIST=sample.c linux.mk
+
+ctapimcdatadir=$(datarootdir)/@PACKAGENAME@/ctapi_mc
+ctapimcdata_DATA=sample.c

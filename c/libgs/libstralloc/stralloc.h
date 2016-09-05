@@ -17,11 +17,11 @@ typedef struct stralloc {
     int a;      // s的空间大小
 } stralloc;
 
-typedef struct stralloc_s {
+/*typedef struct stralloc_s {
     stralloc *sa;
     int len;
     int a;
-} stralloc_s;
+} stralloc_s;*/
 
 
 

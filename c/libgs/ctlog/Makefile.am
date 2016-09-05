@@ -21,3 +21,6 @@ ctloginclude_HEADERS=ctlog.h
 libdir=$(prefix)/lib64/@PACKAGENAME@/ctlog
 
 EXTRA_DIST=sample.c
+
+ctlogdatadir=$(datarootdir)/@PACKAGENAME@/ctlog
+ctlogdata_DATA=sample.c

@@ -21,3 +21,6 @@ base64include_HEADERS=base64.h
 libdir=$(prefix)/lib64/@PACKAGENAME@/base64
 
 EXTRA_DIST=sample.c
+
+base64datadir=$(datarootdir)/@PACKAGENAME@/base64
+base64data_DATA=sample.c

@@ -15,6 +15,7 @@
 @SET_MAKE@
 
 
+
 VPATH = @srcdir@
 am__is_gnu_make = test -n '$(MAKEFILE_LIST)' && test -n '$(MAKELEVEL)'
 am__make_running_with_option = \
@@ -117,6 +118,7 @@ am__uninstall_files_from_dir = { \
          $(am__cd) "$$dir" && rm -f $$files; }; \
   }
 am__installdirs = "$(DESTDIR)$(libdir)" \
+	"$(DESTDIR)$(ctapimysqldatadir)" \
 	"$(DESTDIR)$(ctapimysqlincludedir)"
 LTLIBRARIES = $(lib_LTLIBRARIES)
 libgs_ctapi_mysql_la_LIBADD =
@@ -171,6 +173,7 @@ am__can_run_installinfo = \
     n|no|NO) false;; \
     *) (install-info --version) >/dev/null 2>&1;; \
   esac
+DATA = $(ctapimysqldata_DATA)
 HEADERS = $(ctapimysqlinclude_HEADERS)
 am__tagged_files = $(HEADERS) $(SOURCES) $(TAGS_FILES) $(LISP)
 # Read a list of newline-separated strings from the standard input,
@@ -312,12 +315,14 @@ AUTOMAKE_OPTIONS = foreign
 # [动态库]
 lib_LTLIBRARIES = libgs_ctapi_mysql.la
 libgs_ctapi_mysql_la_SOURCES = ctapi_mysql.c ctapi_mysql.h
-libgs_ctapi_mysql_la_CFLAGS = -g -I./
+libgs_ctapi_mysql_la_CFLAGS = -g -I./ -I/usr/include/
 
 # 安装头文件到 {$prefix}/include/libgs/ctapi_mysql/ 下
 ctapimysqlincludedir = $(includedir)/@PACKAGENAME@/ctapi_mysql
 ctapimysqlinclude_HEADERS = ctapi_mysql.h
 EXTRA_DIST = sample.c
+ctapimysqldatadir = $(datarootdir)/@PACKAGENAME@/ctapi_mysql
+ctapimysqldata_DATA = sample.c
 all: all-am
 
 .SUFFIXES:
@@ -432,6 +437,27 @@ mostlyclean-libtool:
 
 clean-libtool:
 	-rm -rf .libs _libs
+install-ctapimysqldataDATA: $(ctapimysqldata_DATA)
+	@$(NORMAL_INSTALL)
+	@list='$(ctapimysqldata_DATA)'; test -n "$(ctapimysqldatadir)" || list=; \
+	if test -n "$$list"; then \
+	  echo " $(MKDIR_P) '$(DESTDIR)$(ctapimysqldatadir)'"; \
+	  $(MKDIR_P) "$(DESTDIR)$(ctapimysqldatadir)" || exit 1; \
+	fi; \
+	for p in $$list; do \
+	  if test -f "$$p"; then d=; else d="$(srcdir)/"; fi; \
+	  echo "$$d$$p"; \
+	done | $(am__base_list) | \
+	while read files; do \
+	  echo " $(INSTALL_DATA) $$files '$(DESTDIR)$(ctapimysqldatadir)'"; \
+	  $(INSTALL_DATA) $$files "$(DESTDIR)$(ctapimysqldatadir)" || exit $$?; \
+	done
+
+uninstall-ctapimysqldataDATA:
+	@$(NORMAL_UNINSTALL)
+	@list='$(ctapimysqldata_DATA)'; test -n "$(ctapimysqldatadir)" || list=; \
+	files=`for p in $$list; do echo $$p; done | sed -e 's|^.*/||'`; \
+	dir='$(DESTDIR)$(ctapimysqldatadir)'; $(am__uninstall_files_from_dir)
 install-ctapimysqlincludeHEADERS: $(ctapimysqlinclude_HEADERS)
 	@$(NORMAL_INSTALL)
 	@list='$(ctapimysqlinclude_HEADERS)'; test -n "$(ctapimysqlincludedir)" || list=; \
@@ -538,9 +564,9 @@ distdir: $(DISTFILES)
 	done
 check-am: all-am
 check: check-am
-all-am: Makefile $(LTLIBRARIES) $(HEADERS)
+all-am: Makefile $(LTLIBRARIES) $(DATA) $(HEADERS)
 installdirs:
-	for dir in "$(DESTDIR)$(libdir)" "$(DESTDIR)$(ctapimysqlincludedir)"; do \
+	for dir in "$(DESTDIR)$(libdir)" "$(DESTDIR)$(ctapimysqldatadir)" "$(DESTDIR)$(ctapimysqlincludedir)"; do \
 	  test -z "$$dir" || $(MKDIR_P) "$$dir"; \
 	done
 install: install-am
@@ -596,7 +622,8 @@ info: info-am
 
 info-am:
 
-install-data-am: install-ctapimysqlincludeHEADERS
+install-data-am: install-ctapimysqldataDATA \
+	install-ctapimysqlincludeHEADERS
 
 install-dvi: install-dvi-am
 
@@ -642,8 +669,8 @@ ps: ps-am
 
 ps-am:
 
-uninstall-am: uninstall-ctapimysqlincludeHEADERS \
-	uninstall-libLTLIBRARIES
+uninstall-am: uninstall-ctapimysqldataDATA \
+	uninstall-ctapimysqlincludeHEADERS uninstall-libLTLIBRARIES
 
 .MAKE: install-am install-strip
 
@@ -652,15 +679,16 @@ uninstall-am: uninstall-ctapimysqlincludeHEADERS \
 	ctags-am distclean distclean-compile distclean-generic \
 	distclean-libtool distclean-tags distdir dvi dvi-am html \
 	html-am info info-am install install-am \
-	install-ctapimysqlincludeHEADERS install-data install-data-am \
-	install-dvi install-dvi-am install-exec install-exec-am \
-	install-html install-html-am install-info install-info-am \
-	install-libLTLIBRARIES install-man install-pdf install-pdf-am \
-	install-ps install-ps-am install-strip installcheck \
-	installcheck-am installdirs maintainer-clean \
-	maintainer-clean-generic mostlyclean mostlyclean-compile \
-	mostlyclean-generic mostlyclean-libtool pdf pdf-am ps ps-am \
-	tags tags-am uninstall uninstall-am \
+	install-ctapimysqldataDATA install-ctapimysqlincludeHEADERS \
+	install-data install-data-am install-dvi install-dvi-am \
+	install-exec install-exec-am install-html install-html-am \
+	install-info install-info-am install-libLTLIBRARIES \
+	install-man install-pdf install-pdf-am install-ps \
+	install-ps-am install-strip installcheck installcheck-am \
+	installdirs maintainer-clean maintainer-clean-generic \
+	mostlyclean mostlyclean-compile mostlyclean-generic \
+	mostlyclean-libtool pdf pdf-am ps ps-am tags tags-am uninstall \
+	uninstall-am uninstall-ctapimysqldataDATA \
 	uninstall-ctapimysqlincludeHEADERS uninstall-libLTLIBRARIES
 
 

@@ -12,3 +12,6 @@ strallocinclude_HEADERS=stralloc.h
 libdir=$(prefix)/lib64/@PACKAGENAME@/stralloc
 
 EXTRA_DIST=sample.c
+
+strallocdatadir=$(datarootdir)/@PACKAGENAME@/stralloc
+strallocdata_DATA=sample.c

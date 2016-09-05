@@ -15,6 +15,7 @@
 @SET_MAKE@
 
 
+
 VPATH = @srcdir@
 am__is_gnu_make = test -n '$(MAKEFILE_LIST)' && test -n '$(MAKELEVEL)'
 am__make_running_with_option = \
@@ -116,7 +117,7 @@ am__uninstall_files_from_dir = { \
     || { echo " ( cd '$$dir' && rm -f" $$files ")"; \
          $(am__cd) "$$dir" && rm -f $$files; }; \
   }
-am__installdirs = "$(DESTDIR)$(libdir)" \
+am__installdirs = "$(DESTDIR)$(libdir)" "$(DESTDIR)$(hashmapdatadir)" \
 	"$(DESTDIR)$(hashmapincludedir)"
 LTLIBRARIES = $(lib_LTLIBRARIES)
 libgs_hashmap_la_LIBADD =
@@ -171,6 +172,7 @@ am__can_run_installinfo = \
     n|no|NO) false;; \
     *) (install-info --version) >/dev/null 2>&1;; \
   esac
+DATA = $(hashmapdata_DATA)
 HEADERS = $(hashmapinclude_HEADERS)
 am__tagged_files = $(HEADERS) $(SOURCES) $(TAGS_FILES) $(LISP)
 # Read a list of newline-separated strings from the standard input,
@@ -318,6 +320,8 @@ libgs_hashmap_la_CFLAGS = -g -I./
 hashmapincludedir = $(includedir)/@PACKAGENAME@/hashmap
 hashmapinclude_HEADERS = hashmap.h
 EXTRA_DIST = sample.c
+hashmapdatadir = $(datarootdir)/@PACKAGENAME@/hashmap
+hashmapdata_DATA = sample.c
 all: all-am
 
 .SUFFIXES:
@@ -432,6 +436,27 @@ mostlyclean-libtool:
 
 clean-libtool:
 	-rm -rf .libs _libs
+install-hashmapdataDATA: $(hashmapdata_DATA)
+	@$(NORMAL_INSTALL)
+	@list='$(hashmapdata_DATA)'; test -n "$(hashmapdatadir)" || list=; \
+	if test -n "$$list"; then \
+	  echo " $(MKDIR_P) '$(DESTDIR)$(hashmapdatadir)'"; \
+	  $(MKDIR_P) "$(DESTDIR)$(hashmapdatadir)" || exit 1; \
+	fi; \
+	for p in $$list; do \
+	  if test -f "$$p"; then d=; else d="$(srcdir)/"; fi; \
+	  echo "$$d$$p"; \
+	done | $(am__base_list) | \
+	while read files; do \
+	  echo " $(INSTALL_DATA) $$files '$(DESTDIR)$(hashmapdatadir)'"; \
+	  $(INSTALL_DATA) $$files "$(DESTDIR)$(hashmapdatadir)" || exit $$?; \
+	done
+
+uninstall-hashmapdataDATA:
+	@$(NORMAL_UNINSTALL)
+	@list='$(hashmapdata_DATA)'; test -n "$(hashmapdatadir)" || list=; \
+	files=`for p in $$list; do echo $$p; done | sed -e 's|^.*/||'`; \
+	dir='$(DESTDIR)$(hashmapdatadir)'; $(am__uninstall_files_from_dir)
 install-hashmapincludeHEADERS: $(hashmapinclude_HEADERS)
 	@$(NORMAL_INSTALL)
 	@list='$(hashmapinclude_HEADERS)'; test -n "$(hashmapincludedir)" || list=; \
@@ -538,9 +563,9 @@ distdir: $(DISTFILES)
 	done
 check-am: all-am
 check: check-am
-all-am: Makefile $(LTLIBRARIES) $(HEADERS)
+all-am: Makefile $(LTLIBRARIES) $(DATA) $(HEADERS)
 installdirs:
-	for dir in "$(DESTDIR)$(libdir)" "$(DESTDIR)$(hashmapincludedir)"; do \
+	for dir in "$(DESTDIR)$(libdir)" "$(DESTDIR)$(hashmapdatadir)" "$(DESTDIR)$(hashmapincludedir)"; do \
 	  test -z "$$dir" || $(MKDIR_P) "$$dir"; \
 	done
 install: install-am
@@ -596,7 +621,7 @@ info: info-am
 
 info-am:
 
-install-data-am: install-hashmapincludeHEADERS
+install-data-am: install-hashmapdataDATA install-hashmapincludeHEADERS
 
 install-dvi: install-dvi-am
 
@@ -642,7 +667,8 @@ ps: ps-am
 
 ps-am:
 
-uninstall-am: uninstall-hashmapincludeHEADERS uninstall-libLTLIBRARIES
+uninstall-am: uninstall-hashmapdataDATA \
+	uninstall-hashmapincludeHEADERS uninstall-libLTLIBRARIES
 
 .MAKE: install-am install-strip
 
@@ -652,14 +678,15 @@ uninstall-am: uninstall-hashmapincludeHEADERS uninstall-libLTLIBRARIES
 	distclean-libtool distclean-tags distdir dvi dvi-am html \
 	html-am info info-am install install-am install-data \
 	install-data-am install-dvi install-dvi-am install-exec \
-	install-exec-am install-hashmapincludeHEADERS install-html \
-	install-html-am install-info install-info-am \
-	install-libLTLIBRARIES install-man install-pdf install-pdf-am \
-	install-ps install-ps-am install-strip installcheck \
-	installcheck-am installdirs maintainer-clean \
-	maintainer-clean-generic mostlyclean mostlyclean-compile \
-	mostlyclean-generic mostlyclean-libtool pdf pdf-am ps ps-am \
-	tags tags-am uninstall uninstall-am \
+	install-exec-am install-hashmapdataDATA \
+	install-hashmapincludeHEADERS install-html install-html-am \
+	install-info install-info-am install-libLTLIBRARIES \
+	install-man install-pdf install-pdf-am install-ps \
+	install-ps-am install-strip installcheck installcheck-am \
+	installdirs maintainer-clean maintainer-clean-generic \
+	mostlyclean mostlyclean-compile mostlyclean-generic \
+	mostlyclean-libtool pdf pdf-am ps ps-am tags tags-am uninstall \
+	uninstall-am uninstall-hashmapdataDATA \
 	uninstall-hashmapincludeHEADERS uninstall-libLTLIBRARIES
 
 

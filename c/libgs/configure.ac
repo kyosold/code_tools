@@ -2,7 +2,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.69])
-AC_INIT([libgs.x86_64], [0.1], [kyosold@qq.com])
+AC_INIT([libgs.x86_64], [0.21], [kyosold@qq.com])
 AC_CONFIG_SRCDIR([base64/base64.c])
 
 AM_INIT_AUTOMAKE([foreign -Wall -Werror])
@@ -11,6 +11,7 @@ AM_INIT_AUTOMAKE([foreign -Wall -Werror])
 AC_PROG_CC
 
 
+# ======================================
 # --with-ctapi_mc ----------
 AC_ARG_WITH(
 	[ctapi_mc],
@@ -23,6 +24,7 @@ if test "x$zmq_ctapi_mc" == "xyes"; then
 	AC_CHECK_LIB([memcached], [memcached_set], [], [AC_MSG_ERROR([Could not find library -lmemcached])])
 fi
 
+# ======================================
 # --with-ctapi_mysql -------
 AC_ARG_WITH(
 	[ctapi_mysql],
@@ -32,9 +34,10 @@ AC_ARG_WITH(
 )
 # Check mysql libraries
 if test "x$zmq_ctapi_mysql" == "xyes"; then
-	AC_CHECK_LIB([mysqlclient], [mysql_init], [], [AC_MSG_ERROR([Could not find library -lmysqlclient])])
+	AC_CHECK_LIB([mysqlclient], [mysql_real_query], [], [AC_MSG_ERROR([Could not find library -lmysqlclient])])
 fi
 
+# ======================================
 # --with-ctapi_curl --------
 AC_ARG_WITH(
 	[ctapi_curl],

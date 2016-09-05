@@ -12,3 +12,6 @@ dictionaryinclude_HEADERS=dictionary.h
 libdir=$(prefix)/lib64/@PACKAGENAME@/dictionary
 
 EXTRA_DIST=sample.c
+
+dictionarydatadir=$(datarootdir)/@PACKAGENAME@/dictionary
+dictionarydata_DATA=sample.c

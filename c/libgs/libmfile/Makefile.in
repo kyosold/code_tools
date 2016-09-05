@@ -15,6 +15,7 @@
 @SET_MAKE@
 
 
+
 VPATH = @srcdir@
 am__is_gnu_make = test -n '$(MAKEFILE_LIST)' && test -n '$(MAKELEVEL)'
 am__make_running_with_option = \
@@ -116,7 +117,8 @@ am__uninstall_files_from_dir = { \
     || { echo " ( cd '$$dir' && rm -f" $$files ")"; \
          $(am__cd) "$$dir" && rm -f $$files; }; \
   }
-am__installdirs = "$(DESTDIR)$(libdir)" "$(DESTDIR)$(mfileincludedir)"
+am__installdirs = "$(DESTDIR)$(libdir)" "$(DESTDIR)$(mfiledatadir)" \
+	"$(DESTDIR)$(mfileincludedir)"
 LTLIBRARIES = $(lib_LTLIBRARIES)
 libgs_mfile_la_LIBADD =
 am_libgs_mfile_la_OBJECTS = libgs_mfile_la-mfile.lo
@@ -170,6 +172,7 @@ am__can_run_installinfo = \
     n|no|NO) false;; \
     *) (install-info --version) >/dev/null 2>&1;; \
   esac
+DATA = $(mfiledata_DATA)
 HEADERS = $(mfileinclude_HEADERS)
 am__tagged_files = $(HEADERS) $(SOURCES) $(TAGS_FILES) $(LISP)
 # Read a list of newline-separated strings from the standard input,
@@ -317,6 +320,8 @@ libgs_mfile_la_CFLAGS = -g -I./
 mfileincludedir = $(includedir)/@PACKAGENAME@/mfile
 mfileinclude_HEADERS = mfile.h queue.h
 EXTRA_DIST = sample.c linux.mk
+mfiledatadir = $(datarootdir)/@PACKAGENAME@/mfile
+mfiledata_DATA = sample.c
 all: all-am
 
 .SUFFIXES:
@@ -431,6 +436,27 @@ mostlyclean-libtool:
 
 clean-libtool:
 	-rm -rf .libs _libs
+install-mfiledataDATA: $(mfiledata_DATA)
+	@$(NORMAL_INSTALL)
+	@list='$(mfiledata_DATA)'; test -n "$(mfiledatadir)" || list=; \
+	if test -n "$$list"; then \
+	  echo " $(MKDIR_P) '$(DESTDIR)$(mfiledatadir)'"; \
+	  $(MKDIR_P) "$(DESTDIR)$(mfiledatadir)" || exit 1; \
+	fi; \
+	for p in $$list; do \
+	  if test -f "$$p"; then d=; else d="$(srcdir)/"; fi; \
+	  echo "$$d$$p"; \
+	done | $(am__base_list) | \
+	while read files; do \
+	  echo " $(INSTALL_DATA) $$files '$(DESTDIR)$(mfiledatadir)'"; \
+	  $(INSTALL_DATA) $$files "$(DESTDIR)$(mfiledatadir)" || exit $$?; \
+	done
+
+uninstall-mfiledataDATA:
+	@$(NORMAL_UNINSTALL)
+	@list='$(mfiledata_DATA)'; test -n "$(mfiledatadir)" || list=; \
+	files=`for p in $$list; do echo $$p; done | sed -e 's|^.*/||'`; \
+	dir='$(DESTDIR)$(mfiledatadir)'; $(am__uninstall_files_from_dir)
 install-mfileincludeHEADERS: $(mfileinclude_HEADERS)
 	@$(NORMAL_INSTALL)
 	@list='$(mfileinclude_HEADERS)'; test -n "$(mfileincludedir)" || list=; \
@@ -537,9 +563,9 @@ distdir: $(DISTFILES)
 	done
 check-am: all-am
 check: check-am
-all-am: Makefile $(LTLIBRARIES) $(HEADERS)
+all-am: Makefile $(LTLIBRARIES) $(DATA) $(HEADERS)
 installdirs:
-	for dir in "$(DESTDIR)$(libdir)" "$(DESTDIR)$(mfileincludedir)"; do \
+	for dir in "$(DESTDIR)$(libdir)" "$(DESTDIR)$(mfiledatadir)" "$(DESTDIR)$(mfileincludedir)"; do \
 	  test -z "$$dir" || $(MKDIR_P) "$$dir"; \
 	done
 install: install-am
@@ -595,7 +621,7 @@ info: info-am
 
 info-am:
 
-install-data-am: install-mfileincludeHEADERS
+install-data-am: install-mfiledataDATA install-mfileincludeHEADERS
 
 install-dvi: install-dvi-am
 
@@ -641,7 +667,8 @@ ps: ps-am
 
 ps-am:
 
-uninstall-am: uninstall-libLTLIBRARIES uninstall-mfileincludeHEADERS
+uninstall-am: uninstall-libLTLIBRARIES uninstall-mfiledataDATA \
+	uninstall-mfileincludeHEADERS
 
 .MAKE: install-am install-strip
 
@@ -653,13 +680,13 @@ uninstall-am: uninstall-libLTLIBRARIES uninstall-mfileincludeHEADERS
 	install-data-am install-dvi install-dvi-am install-exec \
 	install-exec-am install-html install-html-am install-info \
 	install-info-am install-libLTLIBRARIES install-man \
-	install-mfileincludeHEADERS install-pdf install-pdf-am \
-	install-ps install-ps-am install-strip installcheck \
-	installcheck-am installdirs maintainer-clean \
+	install-mfiledataDATA install-mfileincludeHEADERS install-pdf \
+	install-pdf-am install-ps install-ps-am install-strip \
+	installcheck installcheck-am installdirs maintainer-clean \
 	maintainer-clean-generic mostlyclean mostlyclean-compile \
 	mostlyclean-generic mostlyclean-libtool pdf pdf-am ps ps-am \
 	tags tags-am uninstall uninstall-am uninstall-libLTLIBRARIES \
-	uninstall-mfileincludeHEADERS
+	uninstall-mfiledataDATA uninstall-mfileincludeHEADERS
 
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.

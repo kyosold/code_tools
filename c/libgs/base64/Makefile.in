@@ -15,6 +15,7 @@
 @SET_MAKE@
 
 
+
 VPATH = @srcdir@
 am__is_gnu_make = test -n '$(MAKEFILE_LIST)' && test -n '$(MAKELEVEL)'
 am__make_running_with_option = \
@@ -116,7 +117,7 @@ am__uninstall_files_from_dir = { \
     || { echo " ( cd '$$dir' && rm -f" $$files ")"; \
          $(am__cd) "$$dir" && rm -f $$files; }; \
   }
-am__installdirs = "$(DESTDIR)$(libdir)" \
+am__installdirs = "$(DESTDIR)$(libdir)" "$(DESTDIR)$(base64datadir)" \
 	"$(DESTDIR)$(base64includedir)"
 LTLIBRARIES = $(lib_LTLIBRARIES)
 libgs_base64_la_LIBADD =
@@ -171,6 +172,7 @@ am__can_run_installinfo = \
     n|no|NO) false;; \
     *) (install-info --version) >/dev/null 2>&1;; \
   esac
+DATA = $(base64data_DATA)
 HEADERS = $(base64include_HEADERS)
 am__tagged_files = $(HEADERS) $(SOURCES) $(TAGS_FILES) $(LISP)
 # Read a list of newline-separated strings from the standard input,
@@ -327,6 +329,8 @@ libgs_base64_la_CFLAGS = -g -I./
 base64includedir = $(includedir)/@PACKAGENAME@/base64
 base64include_HEADERS = base64.h
 EXTRA_DIST = sample.c
+base64datadir = $(datarootdir)/@PACKAGENAME@/base64
+base64data_DATA = sample.c
 all: all-am
 
 .SUFFIXES:
@@ -441,6 +445,27 @@ mostlyclean-libtool:
 
 clean-libtool:
 	-rm -rf .libs _libs
+install-base64dataDATA: $(base64data_DATA)
+	@$(NORMAL_INSTALL)
+	@list='$(base64data_DATA)'; test -n "$(base64datadir)" || list=; \
+	if test -n "$$list"; then \
+	  echo " $(MKDIR_P) '$(DESTDIR)$(base64datadir)'"; \
+	  $(MKDIR_P) "$(DESTDIR)$(base64datadir)" || exit 1; \
+	fi; \
+	for p in $$list; do \
+	  if test -f "$$p"; then d=; else d="$(srcdir)/"; fi; \
+	  echo "$$d$$p"; \
+	done | $(am__base_list) | \
+	while read files; do \
+	  echo " $(INSTALL_DATA) $$files '$(DESTDIR)$(base64datadir)'"; \
+	  $(INSTALL_DATA) $$files "$(DESTDIR)$(base64datadir)" || exit $$?; \
+	done
+
+uninstall-base64dataDATA:
+	@$(NORMAL_UNINSTALL)
+	@list='$(base64data_DATA)'; test -n "$(base64datadir)" || list=; \
+	files=`for p in $$list; do echo $$p; done | sed -e 's|^.*/||'`; \
+	dir='$(DESTDIR)$(base64datadir)'; $(am__uninstall_files_from_dir)
 install-base64includeHEADERS: $(base64include_HEADERS)
 	@$(NORMAL_INSTALL)
 	@list='$(base64include_HEADERS)'; test -n "$(base64includedir)" || list=; \
@@ -547,9 +572,9 @@ distdir: $(DISTFILES)
 	done
 check-am: all-am
 check: check-am
-all-am: Makefile $(LTLIBRARIES) $(HEADERS)
+all-am: Makefile $(LTLIBRARIES) $(DATA) $(HEADERS)
 installdirs:
-	for dir in "$(DESTDIR)$(libdir)" "$(DESTDIR)$(base64includedir)"; do \
+	for dir in "$(DESTDIR)$(libdir)" "$(DESTDIR)$(base64datadir)" "$(DESTDIR)$(base64includedir)"; do \
 	  test -z "$$dir" || $(MKDIR_P) "$$dir"; \
 	done
 install: install-am
@@ -605,7 +630,7 @@ info: info-am
 
 info-am:
 
-install-data-am: install-base64includeHEADERS
+install-data-am: install-base64dataDATA install-base64includeHEADERS
 
 install-dvi: install-dvi-am
 
@@ -651,7 +676,8 @@ ps: ps-am
 
 ps-am:
 
-uninstall-am: uninstall-base64includeHEADERS uninstall-libLTLIBRARIES
+uninstall-am: uninstall-base64dataDATA uninstall-base64includeHEADERS \
+	uninstall-libLTLIBRARIES
 
 .MAKE: install-am install-strip
 
@@ -659,7 +685,7 @@ uninstall-am: uninstall-base64includeHEADERS uninstall-libLTLIBRARIES
 	clean-libLTLIBRARIES clean-libtool cscopelist-am ctags \
 	ctags-am distclean distclean-compile distclean-generic \
 	distclean-libtool distclean-tags distdir dvi dvi-am html \
-	html-am info info-am install install-am \
+	html-am info info-am install install-am install-base64dataDATA \
 	install-base64includeHEADERS install-data install-data-am \
 	install-dvi install-dvi-am install-exec install-exec-am \
 	install-html install-html-am install-info install-info-am \
@@ -668,7 +694,7 @@ uninstall-am: uninstall-base64includeHEADERS uninstall-libLTLIBRARIES
 	installcheck-am installdirs maintainer-clean \
 	maintainer-clean-generic mostlyclean mostlyclean-compile \
 	mostlyclean-generic mostlyclean-libtool pdf pdf-am ps ps-am \
-	tags tags-am uninstall uninstall-am \
+	tags tags-am uninstall uninstall-am uninstall-base64dataDATA \
 	uninstall-base64includeHEADERS uninstall-libLTLIBRARIES
 
 
