@@ -1,7 +1,7 @@
 #                                               -*- Autoconf -*-
 # Process this file with autoconf to produce a configure script.
 
-AC_PREREQ([2.69])
+AC_PREREQ([2.63])
 AC_INIT([libgs.x86_64], [0.21], [kyosold@qq.com])
 AC_CONFIG_SRCDIR([base64/base64.c])
 
@@ -17,7 +17,7 @@ AC_ARG_WITH(
 	[ctapi_mc],
 	[AS_HELP_STRING([--with-ctapi_mc], [Enable ctapi_mc Library])],
 	[zmq_ctapi_mc="yes"],
-	[]
+	[zmq_ctapi_mc="no"]
 )
 # Checks for libraries.
 if test "x$zmq_ctapi_mc" == "xyes"; then
@@ -30,7 +30,7 @@ AC_ARG_WITH(
 	[ctapi_mysql],
 	[AS_HELP_STRING([--with-ctapi_mysql], [Enable ctapi_mysql Library])],
 	[zmq_ctapi_mysql="yes"],
-	[]
+	[zmq_ctapi_mysql="no"]
 )
 # Check mysql libraries
 if test "x$zmq_ctapi_mysql" == "xyes"; then
@@ -43,7 +43,7 @@ AC_ARG_WITH(
 	[ctapi_curl],
 	[AS_HELP_STRING([--with-ctapi_curl], [Enable ctapi_curl Library])],
 	[zmq_ctapi_curl="yes"],
-	[]
+	[zmq_ctapi_curl="no"]
 )
 # Check curl libraries
 if test "x$zmq_ctapi_curl" == "xyes"; then
@@ -59,17 +59,24 @@ AC_SUBST([PACKAGENAME], ["libgs"])
 
 AC_PROG_LIBTOOL
 
+
+# Checks for libraries.
+
 # Checks for header files.
-AC_CHECK_HEADERS([limits.h stddef.h stdint.h stdlib.h string.h unistd.h])
+AC_CHECK_HEADERS([limits.h netdb.h stddef.h stdint.h stdlib.h string.h syslog.h unistd.h])
 
 # Checks for typedefs, structures, and compiler characteristics.
-AC_CHECK_HEADER_STDBOOL
+AC_HEADER_STDBOOL
 AC_C_INLINE
 AC_TYPE_SIZE_T
+AC_TYPE_UINT16_T
+AC_TYPE_UINT32_T
+AC_TYPE_UINT8_T
 
 # Checks for library functions.
 AC_FUNC_MALLOC
-AC_CHECK_FUNCS([memchr memmove memset strcasecmp strchr strtol])
+AC_FUNC_REALLOC
+AC_CHECK_FUNCS([memchr memmove memset strcasecmp strchr strdup strncasecmp strtol])
 
 AC_OUTPUT([Makefile 
 		base64/Makefile 
@@ -82,5 +89,4 @@ AC_OUTPUT([Makefile
 		libstralloc/Makefile 
 		utf8str/Makefile 
 		ctapi_curl/Makefile 
-		ctlog/Makefile
-		])
+		ctlog/Makefile])
