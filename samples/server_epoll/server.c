@@ -534,7 +534,7 @@ int main(int argc, char **argv)
                     }
                     log_debug("epoll_add fd[%d]", pipe_r_ev.data.fd);
 
-                    pipe_r_ev.data.fd++;
+					epoll_num_running++;
 
                 } else if (connfd == -1) {
                     if (errno != EAGAIN && errno != ECONNABORTED && errno != EPROTO && errno != EINTR) {
