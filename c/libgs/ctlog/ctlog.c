@@ -2,8 +2,8 @@
 #include <string.h>
 #include "ctlog.h"
 
-int log_level = info;
-char log_sid[1024] = {0};
+int ctlog_level = info;
+char ctlog_sid[1024] = {0};
 
 void ctlog(const char *ident, int option, int facility)
 {

@@ -8,10 +8,10 @@ int main(int argc, char **argv)
 	ctlog("log_name", LOG_PID|LOG_NDELAY, LOG_MAIL);
 
 	// 2. set session unique id
-	snprintf(log_sid, sizeof(log_sid), "tB24U1FL025441");
+	snprintf(ctlog_sid, sizeof(ctlog_sid), "tB24U1FL025441");
 
 	// 3. set log level
-	log_level = info;
+	ctlog_level = info;
 
 	// 4. write some log
 	log_info("info log:%s", "hello, world");    # info
