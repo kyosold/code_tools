@@ -558,7 +558,7 @@ int main(int argc, char **argv)
                         char buf[512] = {0};
                         nr = read(evt_fd, buf, sizeof(buf));
                         if (nr == -1) {         // 循环读完所有数据，结束 
-                            if (errno != EAGAIN || errno == EWOULDBLOCK) {
+                            if (errno != EAGAIN) {
                                 log_debug("finished to read all data in loop");
                                 break;
                             }
