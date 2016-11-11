@@ -584,13 +584,13 @@ int main(int argc, char **argv)
                         char buf[512] = {0};
                         nr = read(evt_fd, buf, sizeof(buf));
                         if (nr == -1) {         // 循环读完所有数据，结束 
-                            if (errno == EAGAIN) {
-                                log_debug("%s finished to read all data from child", child_mid);
+                            if (errno != EAGAIN) {
+                            	log_error("%s read data from child fail:[%d]%s", child_mid, errno, strerror(errno));
+                            	close(evt_fd);
                                 break;
                             }
                     
-                            log_error("%s read data from child fail:[%d]%s", child_mid, errno, strerror(errno));
-                            close(evt_fd);
+                            log_debug("%s finished to read all data from child", child_mid);
                             break;
 
                         } else if (nr == 0) {   // fd主动关闭请求
