@@ -26,7 +26,6 @@
 
 
 
-char mid[MAX_LINE]      = {0};
 int pfd_r               = 0;
 int pfd_w               = 1;
 int client_fd           = 2;
@@ -38,7 +37,7 @@ int epoll_event_num     = 0;
 struct epoll_event *epoll_evts = NULL;
 
 // ------ CMD param ------
-char sid[MAX_LINE]      = {0};
+char mid[MAX_LINE]      = {0};
 char remote[MAX_LINE]   = {0};
 char cfg_ini[MAX_LINE]  = {0};
 
@@ -121,144 +120,140 @@ int main(int argc, char **argv)
     }
 
     if (get_config_file(cfg_ini) == 1) {
-        _exit(100);
+        _exit(50);
     }
 
     // start log process
-    log_level = atoi(clog_level);
+    ctlog_level = atoi(clog_level);
     ctlog("child", LOG_PID|LOG_NDELAY, LOG_MAIL);
+    snprintf(ctlog_sid, sizeof(ctlog_sid), "%s", mid);
 
     log_info("start process");
-
-    // get UUID
-    /*int n = create_unique_id(mid, sizeof(mid));
-    if (n != 16) {
-        log_error("create unique id fail");
-
-        _exit(100);
-    }*/
 
     // Epoll Initialize
     int epoll_i = 0;
     epoll_event_num = 4;
     epoll_evts = (struct epoll_event *)malloc(epoll_event_num * sizeof(struct epoll_event));
     if (epoll_evts == NULL) {
-        log_error("%s alloc epoll event fail:[%d]%s", mid, errno, strerror(errno));
-        _exit(100);
+        log_error("alloc epoll event fail:[%d]%s", errno, strerror(errno));
+        _exit(50);
     }
 
     // Epoll Create FD
     epoll_fd = epoll_create(epoll_event_num);
     if (epoll_fd <= 0) {
-        log_error("%s create epoll fd failed:[%d]%s", mid, errno, strerror(errno));
-        _exit(100);
+        log_error("create epoll fd failed:[%d]%s", errno, strerror(errno));
+        _exit(50);
     }
 
-    // Add client fd to epoll
+    // ------ Add client fd to epoll
     if (ndelay_on(client_fd) == -1) {
         log_error("set fd[%d] nonblock fail:[%d]%s", client_fd, errno, strerror(errno));
-        _exit(100);
+        _exit(50);
     }
 
     struct epoll_event client_evt;
     client_evt.events = EPOLLIN | EPOLLET;
     client_evt.data.fd = client_fd;
     if (epoll_ctl(epoll_fd, EPOLL_CTL_ADD, client_fd, &client_evt) == -1) {
-        log_error("%s add event to epoll fail. fd:%d event:EPOLLIN", mid, client_evt.data.fd);
-        _exit(100);
+        log_error("add event to epoll fail. fd:%d event:EPOLLIN", client_evt.data.fd);
+        _exit(50);
     }
-    log_debug("%s add event to epoll fail. fd:%d event:EPOLLIN", mid, client_evt.data.fd);
+    log_debug("add event to epoll fail. fd:%d event:EPOLLIN", client_evt.data.fd);
 
-    // Add pfd_r fd to epoll
+    // ------ Add pfd_r fd to epoll
     if (ndelay_on(pfd_r) == -1) {
         log_error("set fd[%d] nonblock fail:[%d]%s", pfd_r, errno, strerror(errno));
-        _exit(100);
+        _exit(50);
     }
 
     struct epoll_event pfd_r_evt;
     pfd_r_evt.events = EPOLLIN | EPOLLET;
     pfd_r_evt.data.fd = pfd_r;
     if (epoll_ctl(epoll_fd, EPOLL_CTL_ADD, pfd_r, &pfd_r_evt) == -1) {
-        log_info("%s add event to epoll fail. fd:%d event:EPOLLIN",  mid, pfd_r_evt.data.fd);
-        _exit(100);
+        log_info("add event to epoll fail. fd:%d event:EPOLLIN", pfd_r_evt.data.fd);
+        _exit(50);
     }
-    log_debug("%s add parent pipe read fd:%d event to epoll succ", mid, pfd_r_evt.data.fd);
+    log_debug("add parent pipe read fd:%d event to epoll succ", pfd_r_evt.data.fd);
 
 
     int rw_timeout = atoi(crw_timeout) * 1000;
     for (;;) {
         epoll_nfds = epoll_wait(epoll_fd, epoll_evts, epoll_event_num, rw_timeout);
-        if (epoll_nfds == -1) {
+        /*if (epoll_nfds == -1) {
             if (errno == EINTR) {
-                log_info("%s epoll_wait recive EINTR signal, continue", mid);
+                log_info("epoll_wait recive EINTR signal, continue");
                 continue;
             }
 
-            _exit(100);
+            _exit(50);
         } else if (epoll_nfds == 0) {
-            log_info("%s epoll_wait client timeout[%d s], exit", mid, atoi(crw_timeout));
+            log_info("epoll_wait client timeout[%d s], exit", atoi(crw_timeout));
 
-            _exit(100);
-        }
+            _exit(50);
+        }*/
 
         for (epoll_i=0; epoll_i<epoll_nfds; epoll_i++) {
+
             int evt_fd = epoll_evts[epoll_i].data.fd;
-            int evt_event = epoll_evts[epoll_i].events;
+            int evt    = epoll_evts[epoll_i].events;
 
-            if ((evt_event & EPOLLIN) && (evt_fd == client_fd)) { // client Read
-                log_debug("%s get event EPOLLIN from client socket fd:%d", mid, evt_fd);
+            if ((evt & EPOLLIN) && (evt_fd == client_fd)) { // client Read
+                log_debug("get event EPOLLIN from client socket fd:%d", evt_fd);
 
+                // ...... Read Process ......
+                while (1) {
+                    char buf[MAX_LINE] = {0};
+                    ssize_t nr = 0;
+                    nr = read_fd_timeout(client_fd, buf, sizeof(buf), atoi(crw_timeout));
+                    log_debug("read from client:[%d]%s", nr, buf);
+                    if (nr == -1) {         // 循环读完所有数据，结束
+                        if (errno == EAGAIN) {
+                            log_debug("finished to read all data from child");
+                            break;
+                        }
+
+                        log_error("read data error from client:%s", remote);
+                
+                        close(client_fd);       
+                        close(pfd_r);
+                        close(pfd_w);
+
+                        _exit(51);
+
+                    } else if (nr == -2) {  // 读超时
+                        log_error("read data timeout from client:%s", remote);
+
+                        close(client_fd);       
+                        close(pfd_r);
+                        close(pfd_w);
+
+                        _exit(20);
+
+                    } else if (nr == 0) {   // client fd主动关闭请求
+                        log_info("%s client:%s quit", mid, remote);
+
+                        close(client_fd);       
+                        close(pfd_r);
+                        close(pfd_w);
+
+                        _exit(10);
+                        
+                    }
+
+                    log_info("read data from fd:%d buf:[%d]%s", client_fd, nr, buf);
+    
+                    // ...... Process ......
+                }
+
+            } else if ((evt & EPOLLIN) && (evt_fd == pfd_r)) { // parent Read
+                log_debug("get event EPOLLIN from Parent socket fd:%d", evt_fd);
+
+                // 处理父进程数据读取，同上 
                 // ...... Process ......
-				char buf[MAX_LINE] = {0};
-				int nr = read_fd_timeout(client_fd, buf, sizeof(buf), atoi(crw_timeout));
-				log_info("%s read from client:[%d]%s", mid, nr, buf);
-				if (nr == -1) {			// error
-					log_error("%s read error from client:%s", mid, remote);
-				
-					close(client_fd);		
-					close(pfd_r);
-					close(pfd_w);
 
-					_exit(0);
-	
-				} else if (nr == 0) {	// client exit
-					log_info("%s client:%s quit", mid, remote);
-
-					close(client_fd);		
-					close(pfd_r);
-					close(pfd_w);
-
-					_exit(0);
-
-				} else {				// process logic
-					log_info("%s read buf:[%d]%s from client", mid, nr, buf);
-
-					snprintf(buf, sizeof(buf), "250 OK\n");
-					write_fd_timeout(client_fd, buf, strlen(buf), atoi(crw_timeout));
-				}
-
-            } else if ((evt_event & EPOLLIN) && (evt_fd == pfd_r)) { // parent Read
-                log_debug("%s get event EPOLLIN from Parent socket fd:%d", mid, evt_fd);
-
-                // ...... Process ......
-				char buf[MAX_LINE] = {0};
-				int nr = read_fd_timeout(pfd_r, buf, sizeof(buf), atoi(crw_timeout));
-				log_info("%s read from parent:[%d]%s", mid, nr, buf);
-				if (nr == -1 || nr == 0) {	// parent pipe error
-					log_error("%s read error from parent pipe", mid);
-	
-					close(client_fd);
-					close(pfd_r);
-					close(pfd_w);
-		
-					_exit(0);
-					
-				} else {				// Process Logic
-					// Process Logic
-				}
-
-            } else if (evt_event & EPOLLHUP) {
-                log_debug("%s get event EPOLLHUP socket fd:%d", mid, evt_fd);
+            } else if (evt & EPOLLHUP) {
+                log_debug("get event EPOLLHUP socket fd:%d", evt_fd);
 
                 close(client_fd);
                 close(pfd_r);
@@ -272,5 +267,5 @@ int main(int argc, char **argv)
     }
 
 
-    _exit(111);
+    _exit(1);
 }

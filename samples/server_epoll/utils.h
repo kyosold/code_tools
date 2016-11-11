@@ -99,7 +99,7 @@ int fd_move(int to, int from);
 
 
 /////////////// 信号 操作 /////////////////////
-void sig_catch( int sig, void (*f) () );
+void sig_catch(int sig, void (*f) ());
 void sig_block(int sig);
 void sig_unblock(int sig);
 void sig_pipeignore();
