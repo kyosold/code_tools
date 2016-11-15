@@ -576,7 +576,8 @@ int main(int argc, char **argv)
                         log_error("get child index with socket fd:%d fail", evt_fd);
                         snprintf(child_mid, sizeof(child_mid), "00000000");
                     } else {
-                        snprintf(child_mid, sizeof(child_mid), "%s", clients_t[i].sid);
+                        log_debug("get_idx_with_sockfd(%d) idx[%d]", evt_fd, idx);
+                        snprintf(child_mid, sizeof(child_mid), "%s", clients_t[idx].sid);
                     }
 
                     while (1) {
@@ -585,8 +586,8 @@ int main(int argc, char **argv)
                         nr = read(evt_fd, buf, sizeof(buf));
                         if (nr == -1) {         // 循环读完所有数据，结束 
                             if (errno != EAGAIN) {
-                            	log_error("%s read data from child fail:[%d]%s", child_mid, errno, strerror(errno));
-                            	close(evt_fd);
+                                log_error("%s read data from child fail:[%d]%s", child_mid, errno, strerror(errno));
+                                close(evt_fd);
                                 break;
                             }
                     
@@ -621,6 +622,8 @@ int main(int argc, char **argv)
                 clean_client_with_idx(idx);
 
                 close(evt_fd);
+
+                epoll_num_running--;
 
                 continue;
             }
