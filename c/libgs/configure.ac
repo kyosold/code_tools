@@ -2,7 +2,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.63])
-AC_INIT([libgs.x86_64], [0.21], [kyosold@qq.com])
+AC_INIT([libgs], [0.24], [kyosold@qq.com])
 AC_CONFIG_SRCDIR([base64/base64.c])
 
 AM_INIT_AUTOMAKE([foreign -Wall -Werror])

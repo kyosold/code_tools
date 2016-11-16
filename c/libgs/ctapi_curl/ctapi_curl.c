@@ -88,6 +88,29 @@ size_t _recive_data_from_http_api(void *buffer, size_t size, size_t nmemb, void 
 }
 
 
+CURL *ctapi_curl_create()
+{
+    curl_global_init(CURL_GLOBAL_ALL);
+
+    CURL *curl = NULL;
+
+    curl = curl_easy_init();
+    if (!curl) {
+        return NULL;
+    }
+
+    return curl;
+}
+
+void ctapi_curl_clean(CURL *curl)
+{
+    if (curl) {
+        curl_easy_cleanup(curl);
+    }   
+    curl_global_cleanup();
+}
+
+
 /**
  *  使用curl提交数据
  *
@@ -105,23 +128,23 @@ size_t _recive_data_from_http_api(void *buffer, size_t size, size_t nmemb, void 
  *  @return 0:出错 其它:正常
  */
 //int submit_data_to_http(char *url, char *method, char *post_data, char *save_cookie_fs, char *send_cookie_fs, unsigned int connect_timeout, unsigned int timeout, struct curl_result_string *curl_result_t, char *error, size_t error_size)
-int ctapi_curl_post(char *url, char *method, char *post_data, char *save_cookie_fs, char *send_cookie_fs, unsigned int connect_timeout, unsigned int timeout, struct curl_result_string *curl_result_t, char *error, size_t error_size)
+int ctapi_curl_post(CURL *curl, char *url, char *method, char *post_data, char *save_cookie_fs, char *send_cookie_fs, unsigned int connect_timeout, unsigned int timeout, struct curl_result_string *curl_result_t, char *error, size_t error_size)
 {
 	memset(curl_result_t, 0, sizeof(struct curl_result_string));	
 
-    curl_global_init(CURL_GLOBAL_ALL);
+    //curl_global_init(CURL_GLOBAL_ALL);
 
-    CURL *curl = NULL;
+    //CURL *curl = NULL;
     CURLcode ret;
     char *post_data_urlenc = NULL;
 
     
     // init curl
-    curl = curl_easy_init();
+    /*curl = curl_easy_init();
     if (!curl) {
         snprintf(error, error_size, "couldn't init curl");
 		goto SUBMIT_DATA_TO_HTTP_FAIL;
-    }
+    }*/
     
     // 设置提交方式
     if (strcasecmp(method, "POST") == 0) {
@@ -130,12 +153,14 @@ int ctapi_curl_post(char *url, char *method, char *post_data, char *save_cookie_
         
         // 设置提交数据
         if (post_data != NULL) {
-            // 数据做urlencode
+            // 设置POST 数据
+            curl_easy_setopt(curl, CURLOPT_POSTFIELDS, post_data);
+            /*// 数据做urlencode
             post_data_urlenc = curl_easy_escape(curl, post_data, strlen(post_data));
             if (post_data) {
                 // 设置POST 数据
                 curl_easy_setopt(curl, CURLOPT_POSTFIELDS, post_data_urlenc);
-            }
+            }*/
         }
     }
     
@@ -193,11 +218,11 @@ SUBMIT_DATA_TO_HTTP_SUCC:
         post_data_urlenc = NULL;
     }
     
-	if (curl) {
+	/*if (curl) {
     	curl_easy_cleanup(curl);
 	}
 
-    curl_global_cleanup();
+    curl_global_cleanup();*/
 
 	return (curl_result_t->headers.len + curl_result_t->data.len);
 		
@@ -216,10 +241,10 @@ SUBMIT_DATA_TO_HTTP_FAIL:
         post_data_urlenc = NULL;
     }
     
-	if (curl) {
+	/*if (curl) {
     	curl_easy_cleanup(curl);
 	}
-    curl_global_cleanup();
+    curl_global_cleanup();*/
 
 	return 0;
     

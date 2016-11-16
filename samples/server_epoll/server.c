@@ -505,7 +505,7 @@ int main(int argc, char **argv)
         log_debug("epoll running number:%d nfds:%d", epoll_num_running, epoll_nfds);
 
         for (epoll_i = 0; epoll_i < epoll_nfds; epoll_i++) {
-            //sig_childblock();
+            sig_childblock();
 
             int evt_fd = epoll_evts[epoll_i].data.fd;
             int evt    = epoll_evts[epoll_i].events;
@@ -628,7 +628,7 @@ int main(int argc, char **argv)
                 continue;
             }
 
-            //sig_childunblock();
+            sig_childunblock();
         }
     }
 
