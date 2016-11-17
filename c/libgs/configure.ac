@@ -2,8 +2,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.63])
-AC_INIT([libgs], [0.24], [kyosold@qq.com])
-AC_CONFIG_SRCDIR([base64/base64.c])
+AC_INIT([libgs], [0.25], [kyosold@qq.com])
 
 AM_INIT_AUTOMAKE([foreign -Wall -Werror])
 
@@ -50,10 +49,25 @@ if test "x$zmq_ctapi_curl" == "xyes"; then
 	AC_CHECK_LIB([curl], [curl_easy_init], [], [AC_MSG_ERROR([Could not find library -lcurl])])
 fi
 
+# ======================================
+# --with-ctcrypt --------
+AC_ARG_WITH(
+    [ctcrypt],
+    [AS_HELP_STRING([--with-ctcrypt], [Enable ctcrypt Library])],
+    [zmq_ctcrypt="yes"],
+    [zmq_ctcrypt="no"]
+)
+# Check openssl libraries
+if test "x$zmq_ctcrypt" == "xyes"; then
+    AC_CHECK_LIB([ssl], [MD5_Init], [], [AC_MSG_ERROR([Could not find library -lssl])])
+fi
+
 
 AM_CONDITIONAL(BUILD_ctapi_mc, test "x$zmq_ctapi_mc" == "xyes")
 AM_CONDITIONAL(BUILD_ctapi_mysql, test "x$zmq_ctapi_mysql" == "xyes")
 AM_CONDITIONAL(BUILD_ctapi_curl, test "x$zmq_ctapi_curl" == "xyes")
+AM_CONDITIONAL(BUILD_ctcrypt, test "x$zmq_ctcrypt" == "xyes")
+
 
 AC_SUBST([PACKAGENAME], ["libgs"])
 
@@ -89,4 +103,5 @@ AC_OUTPUT([Makefile
 		libstralloc/Makefile 
 		utf8str/Makefile 
 		ctapi_curl/Makefile 
-		ctlog/Makefile])
+		ctlog/Makefile
+		ctcrypt/Makefile])
