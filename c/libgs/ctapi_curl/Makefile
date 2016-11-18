@@ -219,7 +219,7 @@ libgs_ctapi_curl_la_CFLAGS = -g -I./
 # 安装头文件到 {$prefix}/include/libgs/ctapi_curl/ 下
 ctapicurlincludedir = $(includedir)/libgs/ctapi_curl
 ctapicurlinclude_HEADERS = ctapi_curl.h
-EXTRA_DIST = $(ctapimcdata_DATA) sample.c
+EXTRA_DIST = $(ctapimcdata_DATA) cacert.pem sample.c
 
 # 安装证书文件到 ($prefix}/share/libgs/ctapi_curl/ 下
 ctapicurldatadir = $(datarootdir)/libgs/ctapi_curl

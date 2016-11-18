@@ -11,7 +11,7 @@ ctapicurlinclude_HEADERS=ctapi_curl.h
 
 libdir=$(prefix)/lib64/@PACKAGENAME@/ctapi_curl
 
-EXTRA_DIST=$(ctapimcdata_DATA) sample.c
+EXTRA_DIST=$(ctapimcdata_DATA) cacert.pem sample.c
 
 # 安装证书文件到 ($prefix}/share/libgs/ctapi_curl/ 下
 ctapicurldatadir=$(datarootdir)/@PACKAGENAME@/ctapi_curl
