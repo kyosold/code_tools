@@ -147,6 +147,26 @@ int get_idx_with_sockfd(int sockfd)
 
 
 /*
+ * @return -1:fail other:succ(child list 的索引)
+ */
+int exit_child_with_sockfd(int sockfd)
+{
+    int idx = get_idx_with_sockfd(sockfd);  
+    if (idx < 0) {
+        log_error("get index with socket fd[%d] fail, so not process", sockfd);
+        close(sockfd);
+        return -1;
+    }
+
+    // 子进程清理
+    clean_client_with_idx(idx);
+    close(sockfd);
+    return idx;
+}
+}
+
+
+/*
  * @return
  *     -9: system error
  */
@@ -587,7 +607,7 @@ int main(int argc, char **argv)
                         if (nr == -1) {         // 循环读完所有数据，结束 
                             if (errno != EAGAIN) {
                                 log_error("%s read data from child fail:[%d]%s", child_mid, errno, strerror(errno));
-                                close(evt_fd);
+                                exit_child_with_sockfd(evt_fd);
                                 break;
                             }
                     
@@ -596,7 +616,8 @@ int main(int argc, char **argv)
 
                         } else if (nr == 0) {   // fd主动关闭请求
                             log_info("%s Closed connection on descriptor %d", child_mid, evt_fd);
-                            close(evt_fd);
+
+                            exit_child_with_sockfd(evt_fd);
                             break;
 
                         }
@@ -609,19 +630,14 @@ int main(int argc, char **argv)
 
             } else if ((evt & EPOLLHUP) && (evt_fd != listen_fd)) {
                 // ------ 有子进程退出 ------
-                
-                int idx = get_idx_with_sockfd(evt_fd);
+                int idx = exit_child_with_sockfd(evt_fd);
                 if (idx < 0) {
                     log_error("00000000 get index with socket fd[%d] fail, so not process", evt_fd);
                     continue;
                 }
+                
                 log_debug("%s get event EPOLLHUP: epoll_i[%d] fd[%d] get fd[%d], used[%d]", clients_t[idx].sid, epoll_i,
                         epoll_evts[epoll_i].data.fd, clients_t[idx].pfd_r, clients_t[idx].used);
-
-                // 子进程清理
-                clean_client_with_idx(idx);
-
-                close(evt_fd);
 
                 epoll_num_running--;
 
