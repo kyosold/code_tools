@@ -21,6 +21,8 @@ libgs为C语言的基础库，封装一些日常使用的基础库
 	/usr/local/libgs/lib64/libgs/utf8str
 	/usr/local/libgs/lib64/libgs/ctapi_curl
 	/usr/local/libgs/lib64/libgs/ctapi_mc
+    /usr/local/libgs/lib64/libgs/ctcrypt
+    /usr/local/libgs/lib64/libgs/cthash
 
 # 2. 执行: # /sbin/ldconfig
 ```

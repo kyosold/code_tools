@@ -21,4 +21,4 @@ USE_OPENSSL=ctcrypt
 endif
 
 
-SUBDIRS=base64 confparser $(USE_MC) dictionary $(USE_MYSQL) hashmap libmfile libstralloc utf8str $(USE_CURL) ctlog $(USE_OPENSSL)
+SUBDIRS=base64 confparser $(USE_MC) dictionary $(USE_MYSQL) hashmap libmfile libstralloc utf8str $(USE_CURL) ctlog $(USE_OPENSSL) cthash

@@ -2,7 +2,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.63])
-AC_INIT([libgs], [0.25], [kyosold@qq.com])
+AC_INIT([libgs], [0.26], [kyosold@qq.com])
 
 AM_INIT_AUTOMAKE([foreign -Wall -Werror])
 
@@ -104,4 +104,5 @@ AC_OUTPUT([Makefile
 		utf8str/Makefile 
 		ctapi_curl/Makefile 
 		ctlog/Makefile
-		ctcrypt/Makefile])
+		ctcrypt/Makefile
+		cthash/Makefile])
