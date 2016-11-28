@@ -180,18 +180,6 @@ int main(int argc, char **argv)
     int rw_timeout = atoi(crw_timeout) * 1000;
     for (;;) {
         epoll_nfds = epoll_wait(epoll_fd, epoll_evts, epoll_event_num, rw_timeout);
-        /*if (epoll_nfds == -1) {
-            if (errno == EINTR) {
-                log_info("epoll_wait recive EINTR signal, continue");
-                continue;
-            }
-
-            _exit(50);
-        } else if (epoll_nfds == 0) {
-            log_info("epoll_wait client timeout[%d s], exit", atoi(crw_timeout));
-
-            _exit(50);
-        }*/
 
         for (epoll_i=0; epoll_i<epoll_nfds; epoll_i++) {
 
