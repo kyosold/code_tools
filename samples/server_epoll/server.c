@@ -135,7 +135,7 @@ int get_idx_with_sockfd(int sockfd)
     int idx = -1;
     int i   = 0;
     for (i=0; i<atoi(cmax_connect); i++) {
-        log_debug("clients_t[%d] pfd_r[%d] used[%d] sockfd[%d]", i, clients_t[i].pfd_r, clients_t[i].used, sockfd);
+        //log_debug("clients_t[%d] pfd_r[%d] used[%d] sockfd[%d]", i, clients_t[i].pfd_r, clients_t[i].used, sockfd);
         if ((clients_t[i].pfd_r == sockfd)
             && (clients_t[i].used == 1)) {
             idx = i;
@@ -163,7 +163,6 @@ int exit_child_with_sockfd(int sockfd)
     close(sockfd);
     return idx;
 }
-}
 
 
 /*
@@ -181,13 +180,13 @@ int create_child_and_exec_with_idx_clientfd(int i, int connfd)
      */
     int pfd1[2], pfd2[2];
     if (pipe(pfd1) == -1) {
-        log_error("unable to create pipe:[%d]%s", errno, strerror(errno));
+        log_error("%s unable to create pipe:[%d]%s", clients_t[i].sid, errno, strerror(errno));
 
         return -9;
 
     }
     if (pipe(pfd2) == -1) {
-        log_error("unable to create pipe:[%d]%s", errno, strerror(errno));
+        log_error("%s unable to create pipe:[%d]%s", clients_t[i].sid, errno, strerror(errno));
 
         close(pfd1[0]);
         close(pfd1[1]);
@@ -196,10 +195,10 @@ int create_child_and_exec_with_idx_clientfd(int i, int connfd)
 
         return -9;
     }
-    log_debug("create pfd1[0]:%d pfd1[1]:%d", pfd1[0], pfd1[1]);
-    log_debug("create pfd2[0]:%d pfd2[1]:%d", pfd2[0], pfd2[1]);
+    log_debug("%s create pfd1[0]:%d pfd1[1]:%d", clients_t[i].sid, pfd1[0], pfd1[1]);
+    log_debug("%s create pfd2[0]:%d pfd2[1]:%d", clients_t[i].sid, pfd2[0], pfd2[1]);
 
-    // Create Unique ID
+    /*// Create Unique ID
     n = create_unique_id(clients_t[i].sid, sizeof(clients_t[i].sid));
     if (n != 16) {
         log_error("create unique id fail");
@@ -215,7 +214,7 @@ int create_child_and_exec_with_idx_clientfd(int i, int connfd)
 
         return -9;
     }
-    log_debug("create unique id:%s", clients_t[i].sid);
+    log_debug("create unique id:%s", clients_t[i].sid);*/
 
     // 当程序执行exec函数时本fd将被系统自动关闭,表示不传递给exec创建的新进程
     fcntl(pfd1[1], F_SETFD, FD_CLOEXEC);
@@ -224,7 +223,7 @@ int create_child_and_exec_with_idx_clientfd(int i, int connfd)
 
     int pid = fork();
     if (pid < 0) {
-        log_error("fork fail:[%d]%s", errno, strerror(errno));
+        log_error("%s fork fail:[%d]%s", clients_t[i].sid, errno, strerror(errno));
 
         close(pfd1[0]);
         close(pfd1[1]);
@@ -281,6 +280,7 @@ int create_child_and_exec_with_idx_clientfd(int i, int connfd)
         char *pexec_log = exec_log;
         int len = 0;
         int i = 0;
+        int nw = 0;
         while (args[i] != 0) {
             nw = snprintf(pexec_log + len, sizeof(exec_log) - len, "%s ", args[i]);
             len += nw;
@@ -290,7 +290,7 @@ int create_child_and_exec_with_idx_clientfd(int i, int connfd)
         log_info("Exec:[%s]", exec_log);
 
         if (execvp(*args, args) == -1) {
-            log_error("execvp fail:[%d]%s", errno, strerror(errno));
+            log_error("%s execvp fail:[%d]%s", clients_t[i].sid, errno, strerror(errno));
             _exit(50);
         }
 
@@ -311,19 +311,19 @@ int create_child_and_exec_with_idx_clientfd(int i, int connfd)
     clients_t[i].pfd_r = pfd2[0];
     clients_t[i].pfd_w = pfd1[1];
 
-    log_debug("clients_t[%d] pfd_r[%d] pfd_w[%d]", i, pfd2[0], pfd1[1]);
+    log_debug("%s clients_t[%d] pfd_r[%d] pfd_w[%d]", clients_t[i].sid, i, pfd2[0], pfd1[1]);
 
     if (ndelay_on(clients_t[i].pfd_r) == -1) {
-        log_error("set noblocking fd[%d] fail:[%d]%s", clients_t[i].pfd_r, errno, strerror(errno));
+        log_error("%s set noblocking fd[%d] fail:[%d]%s", clients_t[i].sid, clients_t[i].pfd_r, errno, strerror(errno));
     }
 
     struct epoll_event pipe_r_ev;
     pipe_r_ev.events = EPOLLIN | EPOLLET;
     pipe_r_ev.data.fd = clients_t[i].pfd_r;
     if (epoll_ctl(epoll_fd, EPOLL_CTL_ADD, pipe_r_ev.data.fd, &pipe_r_ev) == -1) {
-        log_error("epoll_ctl client fd[%d] fail:[%d]%s", pipe_r_ev.data.fd, errno, strerror(errno));
+        log_error("%s epoll_ctl client fd[%d] fail:[%d]%s", clients_t[i].sid, pipe_r_ev.data.fd, errno, strerror(errno));
     }
-    log_debug("epoll_add fd[%d]", pipe_r_ev.data.fd);
+    log_debug("%s epoll_add fd[%d]", clients_t[i].sid, pipe_r_ev.data.fd);
 
     return 0;
 }
@@ -540,6 +540,12 @@ int main(int argc, char **argv)
                 // ------ 监控到可读 ------
                 if (evt_fd == listen_fd) {  
                     // ------ 处理新接入的socket ------
+
+                    // Create Unique ID
+                    char scid[1024] = {0};
+                    create_unique_id(scid, sizeof(scid));
+                    log_debug("%s create sid succ", scid);
+
                     while (1) {
                         connfd = accept(listen_fd, (struct sockaddr *)&remote, &addrlen);
                         if (connfd == -1) {
@@ -547,7 +553,7 @@ int main(int argc, char **argv)
                                 // 资源暂时不可读，再来一遍
                                 break;
                             } else {
-                                log_error("accept error");
+                                log_error("%s accept error", scid);
                                 break;
                             }
                         }
@@ -555,19 +561,22 @@ int main(int argc, char **argv)
                         // Get a new index from client lists
                         int i = get_idle_idx_from_clients();
                         if (i == -1) {
-                            log_error("get idle index from client list fail: maybe client queue is full.");
+                            log_error("%s get idle index from client list fail: maybe client queue is full.", scid);
+
+                            write_fd_timeout(connfd, "system error\n", 13, atoi(crw_timeout));
                             close(connfd);
-                            continue;
+                            break;
                         }
                         clients_t[i].used = 1;
                         clients_t[i].fd = connfd;
+                        snprintf(clients_t[i].sid, sizeof(clients_t[i].sid), "%s", scid);
 
                         // Get client IP and Port
                         char *ipaddr = inet_ntoa(remote.sin_addr);
                         struct sockaddr_in sa;
                         int len = sizeof(sa);
                         if (getpeername(connfd, (struct sockaddr *)&sa, &len)) {
-                            log_error("get client ip and port fail:[%d]%s", errno, strerror(errno));
+                            log_error("%s get client ip and port fail:[%d]%s", scid, errno, strerror(errno));
                         }
                         snprintf(clients_t[i].ip, sizeof(clients_t[i].ip), "%s", inet_ntoa(sa.sin_addr));
                         snprintf(clients_t[i].port, sizeof(clients_t[i].port), "%d", ntohs(sa.sin_port));
@@ -579,10 +588,11 @@ int main(int argc, char **argv)
                             write_fd_timeout(connfd, error_buf, strlen(error_buf), atoi(crw_timeout));
 
                             close(connfd);
-                            continue;
+                            break;
                         }
 
                         epoll_num_running++;
+                        break;
                     }
                     // continue
 
@@ -607,7 +617,9 @@ int main(int argc, char **argv)
                         if (nr == -1) {         // 循环读完所有数据，结束 
                             if (errno != EAGAIN) {
                                 log_error("%s read data from child fail:[%d]%s", child_mid, errno, strerror(errno));
+                                
                                 exit_child_with_sockfd(evt_fd);
+                                epoll_num_running--;
                                 break;
                             }
                     
@@ -618,6 +630,7 @@ int main(int argc, char **argv)
                             log_info("%s Closed connection on descriptor %d", child_mid, evt_fd);
 
                             exit_child_with_sockfd(evt_fd);
+                            epoll_num_running--;
                             break;
 
                         }
@@ -630,18 +643,19 @@ int main(int argc, char **argv)
 
             } else if ((evt & EPOLLHUP) && (evt_fd != listen_fd)) {
                 // ------ 有子进程退出 ------
-                int idx = exit_child_with_sockfd(evt_fd);
+                int idx = get_idx_with_sockfd(evt_fd);  
                 if (idx < 0) {
-                    log_error("00000000 get index with socket fd[%d] fail, so not process", evt_fd);
-                    continue;
+                    log_error("get index with socket fd[%d] fail, so not process", evt_fd);
+                    close(evt_fd);
+                    //return -1;
+                } else {
+                    log_debug("%s get event EPOLLHUP: epoll_i[%d] fd[%d] get fd[%d], used[%d]", clients_t[idx].sid, epoll_i, epoll_evts[epoll_i].data.fd, clients_t[idx].pfd_r, clients_t[idx].used);
+
+                    clean_client_with_idx(idx);
+                    close(evt_fd);
                 }
                 
-                log_debug("%s get event EPOLLHUP: epoll_i[%d] fd[%d] get fd[%d], used[%d]", clients_t[idx].sid, epoll_i,
-                        epoll_evts[epoll_i].data.fd, clients_t[idx].pfd_r, clients_t[idx].used);
-
                 epoll_num_running--;
-
-                continue;
             }
 
             sig_childunblock();
