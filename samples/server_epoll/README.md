@@ -7,6 +7,7 @@ Intro
 使用epoll做网络模型，父进程accept连接，创建子进程处理，
 子进程文件描述符（0，1，2）分别dup成（pfd_r, pfd_w, client_fd)
 
+
 client_fd:	客户端fd
 pfd_r:		父进程 读fd
 pfd_w:		父进程 写fd
@@ -14,6 +15,7 @@ pfd_w:		父进程 写fd
 
 #### 文件描述符
 -----
+
 #### 父进程         子进程     客户端
 #### pfd_r <------  0
 #### pfd_w ------>  1
