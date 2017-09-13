@@ -21,7 +21,7 @@ pfd_w:		父进程 写fd
 ####
 
 
-Depend
+依赖:
 -----
 
 libgs 库:
@@ -46,5 +46,11 @@ libgs 库:
 
 uuid:
 	yum -y install libuuid-devel
+
+
+启动方式:
+	1. 拷贝 service.sh 到 /etc/init.d/ 并改名为epoll_server
+	2. 修改权限: chmod 755 /etc/init.d/epoll_server
+	3. 启动/停止: service epoll_server {start|stop}
 
 

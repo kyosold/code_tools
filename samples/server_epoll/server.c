@@ -52,6 +52,7 @@ struct client_st *clients_t = NULL;
 
 void sigchld_exit()
 {
+    // 此函数内不要做syslog调用，在大并发时会出现系统异常问题
     int exitcode;
 
     int wstat, pid;
@@ -197,24 +198,6 @@ int create_child_and_exec_with_idx_clientfd(int i, int connfd)
     }
     log_debug("%s create pfd1[0]:%d pfd1[1]:%d", clients_t[i].sid, pfd1[0], pfd1[1]);
     log_debug("%s create pfd2[0]:%d pfd2[1]:%d", clients_t[i].sid, pfd2[0], pfd2[1]);
-
-    /*// Create Unique ID
-    n = create_unique_id(clients_t[i].sid, sizeof(clients_t[i].sid));
-    if (n != 16) {
-        log_error("create unique id fail");
-
-        close(pfd1[0]);
-        close(pfd1[1]);
-        close(pfd2[0]);
-        close(pfd2[1]);
-        pfd1[0] = -1;
-        pfd1[1] = -1;
-        pfd2[0] = -1;
-        pfd2[1] = -1;
-
-        return -9;
-    }
-    log_debug("create unique id:%s", clients_t[i].sid);*/
 
     // 当程序执行exec函数时本fd将被系统自动关闭,表示不传递给exec创建的新进程
     fcntl(pfd1[1], F_SETFD, FD_CLOEXEC);
@@ -484,8 +467,11 @@ int main(int argc, char **argv)
 
     // Ignore pipe signal
     sig_pipeignore();
+    
     // Catch signal which is child program exit
     sig_catch(SIGCHLD, sigchld_exit);
+    // 如果没有特别的事情，可以不用catch子进程退出，
+    // 直接忽略子进程退出信号: sig_catch(SIGCHLD, SIG_IGN);
 
 
     // ------ Epoll ------
@@ -502,7 +488,7 @@ int main(int argc, char **argv)
         exit(1);
     }
 
-    epoll_fd = epoll_create(epoll_event_num);
+    epoll_fd = epoll_create1(epoll_event_num);
     if (epoll_fd == -1) {
         log_error("epoll create max number %d fail:[%d]%s", epoll_event_num, errno, strerror(errno));
         exit(1);
@@ -530,17 +516,19 @@ int main(int argc, char **argv)
             int evt_fd = epoll_evts[epoll_i].data.fd;
             int evt    = epoll_evts[epoll_i].events;
 
+            log_debug("there is event fd:%d event:%d listen_fd:%d", evt_fd, evt, listen_fd);
+
             if (evt & EPOLLERR) {
-                // ------ 监控到错误 ------
+                // ------ 监控到错误事件 ------
                 log_error("epoll error:[%d]%s", errno, strerror(errno));
                 close(evt_fd);
                 continue;
 
             } else if (evt & EPOLLIN) {
-                // ------ 监控到可读 ------
+                // ------ 监控到可读事件 ------
+
                 if (evt_fd == listen_fd) {  
                     // ------ 处理新接入的socket ------
-
                     // Create Unique ID
                     char scid[1024] = {0};
                     create_unique_id(scid, sizeof(scid));
@@ -616,7 +604,7 @@ int main(int argc, char **argv)
                         nr = read(evt_fd, buf, sizeof(buf));
                         if (nr == -1) {         // 循环读完所有数据，结束 
                             if (errno != EAGAIN) {
-                                log_error("%s read data from child fail:[%d]%s", child_mid, errno, strerror(errno));
+                                log_error("%s Read data from child fail:[%d]%s", child_mid, errno, strerror(errno));
                                 
                                 exit_child_with_sockfd(evt_fd);
                                 epoll_num_running--;
@@ -645,7 +633,7 @@ int main(int argc, char **argv)
                 // ------ 有子进程退出 ------
                 int idx = get_idx_with_sockfd(evt_fd);  
                 if (idx < 0) {
-                    log_error("get index with socket fd[%d] fail, so not process", evt_fd);
+                    log_error("get index with socket fd[%d] fail, maybe memory leak", evt_fd);
                     close(evt_fd);
                     //return -1;
                 } else {
