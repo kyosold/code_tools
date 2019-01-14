@@ -27,3 +27,7 @@ libgs为C语言的基础库，封装一些日常使用的基础库
 # 2. 执行: # /sbin/ldconfig
 ```
 
+具体文档可以看gitbook：
+-----
+https://legacy.gitbook.com/book/kyosold/libgs/details
+-----
