@@ -3,7 +3,6 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <string.h>
-#include <sys/epoll.h>
 #include <sys/param.h>
 #include <unistd.h>
 #include <fcntl.h>
@@ -15,12 +14,13 @@
 #include <netinet/in.h>
 #include <netinet/tcp.h>
 #include <arpa/inet.h>
+#include <netdb.h>
 #include <getopt.h>
 
 #include "server.h"
 #include "utils.h"
 
-#include "ctlog/ctlog.h"
+#include "ctlog.h"
 #include "confparser/confparser.h"
 #include "confparser/dictionary.h"
 
@@ -32,6 +32,7 @@ char cport[128]         = {0};
 char cmax_connect[128]  = {0};
 char clog_level[128]    = {0};
 char crw_timeout[128]   = {0};
+char cpidfile[MAX_LINE] = {0};
 
 // ------ Epoll ------
 int epoll_fd            = -1;
@@ -364,6 +365,16 @@ int get_config_file(char *cfg_ini)
         snprintf(crw_timeout, sizeof(crw_timeout), "%s", prw_timeout);
     }
 
+
+	// Pid File
+	char *ppidfile = dictionary_get(dict_conf, "server:pidfile", NULL);
+	if (ppidfile == NULL) {
+		log_warning("parse config 'pidfile' fail, use default:%s", DEF_PID_FILE);
+		snprintf(cpidfile, sizeof(cpidfile), "%s", DEF_PID_FILE);
+	} else {
+		snprintf(cpidfile, sizeof(cpidfile), "%s", ppidfile);
+	}
+
     /*
     if (dict_conf != NULL) {
         dictionary_del(dict_conf);
@@ -371,6 +382,130 @@ int get_config_file(char *cfg_ini)
     }*/
 
     return 0;
+}
+
+
+
+static void create_pid_file(void)
+{
+    char pidbuf[16];
+    pid_t pid = getpid();
+    int fd, len;
+
+    if (!cpidfile || !*cpidfile)
+        return;
+
+    if ((fd = open(cpidfile, O_WRONLY|O_CREAT|O_EXCL, 0666)) == -1) {
+      failure:
+        fprintf(stderr, "failed to create pid file %s: %s\n", cpidfile, strerror(errno));
+        log_error("failed to create pid file %s", cpidfile);
+        exit(70);
+    }   
+    snprintf(pidbuf, sizeof pidbuf, "%d\n", (int)pid);
+    len = strlen(pidbuf);
+    if (write(fd, pidbuf, len) != len)
+        goto failure;
+
+    close(fd);
+
+    log_info("create pid file(%s)", cpidfile);
+}
+
+
+/* Become a daemon, discarding the controlling terminal. */
+static void become_daemon(int is_daemon)
+{
+    if (is_daemon == 0) {
+        create_pid_file();
+        return;
+    }
+
+    int i;
+    pid_t pid = fork();
+
+    if (pid) {
+        if (pid < 0) {
+            fprintf(stderr, "failed to fork: %s\n", strerror(errno));
+            exit(70);
+        }
+        _exit(0);
+    }
+
+	create_pid_file();
+
+    /* detach from the terminal */
+#ifdef HAVE_SETSID
+    setsid();
+#elif defined TIOCNOTTY
+    i = open("/dev/tty", O_RDWR);
+    if (i >= 0) {
+        ioctl(i, (int)TIOCNOTTY, (char *)0);
+        close(i);
+    }
+#endif
+    /* make sure that stdin, stdout an stderr don't stuff things
+     * up (library functions, for example) */
+    for (i = 0; i < 3; i++) {
+        close(i);
+        open("/dev/null", O_RDWR);
+    }
+}
+
+
+void server_exit()
+{
+    unlink(cpidfile);
+
+    log_info("I AM QUIT, BYE BYE! ////////////////////");
+    exit(1);
+}
+
+
+
+
+static int create_and_bind(char *port)
+{
+	struct addrinfo hints;
+	struct addrinfo *result, *rp;
+	int s, sfd;
+
+	memset(&hints, 0, sizeof(struct addrinfo));
+	hints.ai_family = AF_UNSPEC;     /* Return IPv4 and IPv6 choices */
+	hints.ai_socktype = SOCK_STREAM; /* We want a TCP socket */
+	hints.ai_flags = AI_PASSIVE;     /* All interfaces */
+
+	s = getaddrinfo (NULL, port, &hints, &result);
+	if (s != 0) {
+		fprintf(stderr, "getaddrinfo error: %s\n", gai_strerror (s));
+		log_error("getaddrinfo error: %s", gai_strerror (s));
+		return -1;
+	}
+
+	for (rp=result; rp!=NULL; rp=rp->ai_next) {
+		sfd = socket(rp->ai_family, rp->ai_socktype, rp->ai_protocol);
+		if (sfd == -1)
+			continue;
+
+		s = bind(sfd, rp->ai_addr, rp->ai_addrlen);
+		if (s == -1) {
+			close(sfd);
+			log_error("bind fail");
+			continue;
+		}
+
+		/* We managed to bind successfully! */
+		break;
+	}
+
+	if (rp == NULL) {
+		fprintf(stderr, "Could not bind\n");
+		log_error("Could not bind");
+		return -1;
+	}
+
+	freeaddrinfo(result);
+
+	return sfd;
 }
 
 
@@ -404,6 +539,8 @@ int main(int argc, char **argv)
         exit(0);
     }
 
+	become_daemon(1);
+
     // start log process
     ctlog_level = atoi(clog_level);
     ctlog("server", LOG_PID|LOG_NDELAY, LOG_MAIL);
@@ -413,8 +550,9 @@ int main(int argc, char **argv)
     clients_t = (struct client_st *)malloc((atoi(cmax_connect) + 1) * sizeof(struct client_st));
     if (clients_t == NULL) {
         log_error("malloc clients [%d] fail:[%d]%s", (atoi(cmax_connect) + 1), errno, strerror(errno));
-        exit(1);
+		server_exit(1);
     }
+	log_info("max_connect:%d", atoi(cmax_connect));
 
     // init clients
     for (i=0; i<(atoi(cmax_connect) + 1); i++) {
@@ -427,20 +565,29 @@ int main(int argc, char **argv)
     struct sockaddr_in local, remote;
     socklen_t addrlen;
 
+/*
     // Create listen socket
     int bind_port = atoi(cport);
     if ((listen_fd = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
         log_error("socket fail:[%d]%s", errno, strerror(errno));
         exit(1);
     }
+*/
+
+	listen_fd = create_and_bind(cport);
+	if (listen_fd == -1) {
+		log_error("socket fail:[%d]%s", errno, strerror(errno));
+		server_exit(1);
+	}
 
     // 设置套接字选项避免地址使用错误,解决: Address already in use
     int on = 1;
     if ((setsockopt(listen_fd, SOL_SOCKET, SO_REUSEADDR, &on, sizeof(on))) < 0) {
         log_error("set socket REUSEADDR fail:[%d]%s", errno, strerror(errno));
-        exit(1);
+		server_exit(1);
     }
 
+/*
     bzero(&local, sizeof(local));
     local.sin_family = AF_INET;
     local.sin_addr.s_addr = htonl(INADDR_ANY);
@@ -451,19 +598,20 @@ int main(int argc, char **argv)
         log_error("bind local port:%d fail:[%d]%s", bind_port, errno, strerror(errno));
         exit(1);
     }
-    log_debug("bind local port %d succ", bind_port);
+*/
 
     // 设置listen_fd为非阻塞
     if (ndelay_on(listen_fd) == -1) {
         log_error("set noblocking fd[%d] fail:[%d]%s", listen_fd, errno, strerror(errno));
-        exit(1);    
+		server_exit(1);
     }
 
     // Listen
     if (listen(listen_fd, atoi(cmax_connect)) != 0) {
         log_error("listen fd[%d] max number[%d] fail:[%d]%s", listen_fd, atoi(cmax_connect), errno, strerror(errno));
-        exit(1);
+		server_exit(1);
     }
+    log_info("Listen Port %s succ", cport);
 
     // Ignore pipe signal
     sig_pipeignore();
@@ -472,6 +620,15 @@ int main(int argc, char **argv)
     sig_catch(SIGCHLD, sigchld_exit);
     // 如果没有特别的事情，可以不用catch子进程退出，
     // 直接忽略子进程退出信号: sig_catch(SIGCHLD, SIG_IGN);
+
+	sig_catch(SIGSEGV, server_exit);
+    sig_catch(SIGFPE, server_exit);
+    sig_catch(SIGABRT, server_exit);
+    sig_catch(SIGBUS, server_exit);
+
+    sig_catch(SIGINT, server_exit);
+    sig_catch(SIGHUP, server_exit);
+    sig_catch(SIGTERM, server_exit);
 
 
     // ------ Epoll ------
@@ -485,13 +642,13 @@ int main(int argc, char **argv)
     epoll_evts = (struct epoll_event *)malloc(epoll_event_num * sizeof(struct epoll_event));
     if (epoll_evts == NULL) {
         log_error("malloc epoll events [%d] fail:[%d]%s", (epoll_event_num * sizeof(struct epoll_event)), errno, strerror(errno));
-        exit(1);
+		server_exit(1);
     }
 
-    epoll_fd = epoll_create1(epoll_event_num);
+    epoll_fd = epoll_create(epoll_event_num);
     if (epoll_fd == -1) {
         log_error("epoll create max number %d fail:[%d]%s", epoll_event_num, errno, strerror(errno));
-        exit(1);
+		server_exit(1);
     }
 
     // 设置ET模式
@@ -500,7 +657,7 @@ int main(int argc, char **argv)
     ev.data.fd = listen_fd;
     if (epoll_ctl(epoll_fd, EPOLL_CTL_ADD, ev.data.fd, &ev) == -1) {
         log_error("epoll_ctl: listen socket fail:[%d]%s", errno, strerror(errno));
-        exit(1);
+		server_exit(1);
     }
 
     epoll_num_running = 0;
@@ -534,14 +691,21 @@ int main(int argc, char **argv)
                     create_unique_id(scid, sizeof(scid));
                     log_debug("%s create sid succ", scid);
 
+					int accept_times = 0;
                     while (1) {
+						accept_times++;
                         connfd = accept(listen_fd, (struct sockaddr *)&remote, &addrlen);
                         if (connfd == -1) {
-                            if ((errno == EAGAIN) || (errno == EWOULDBLOCK)) {
+                            if ((errno == EAGAIN) || (errno == EWOULDBLOCK) || (errno == EINTR) || (errno == EPROTO)) {
                                 // 资源暂时不可读，再来一遍
-                                break;
+								if (accept_times > 5) {
+									log_error("%s accept times(%d) error(%d):%s, No More Accept.", scid, accept_times, errno, strerror(errno));
+									break;
+								}
+								continue;
+
                             } else {
-                                log_error("%s accept error", scid);
+								log_error("%s accept error(%d):%s", scid, errno, strerror(errno));
                                 break;
                             }
                         }

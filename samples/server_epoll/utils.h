@@ -1,7 +1,7 @@
 #ifndef _UTILS_H
 #define _UTILS_H
 
-#define CHILD_PROG      "./child"
+#define CHILD_PROG      "./ep_child"
 
 #define MAX_LINE        1024
 #define NET_FAIL		0

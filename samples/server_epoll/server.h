@@ -5,6 +5,7 @@
 #define DEF_MAX_WORKS   "1024"
 #define DEF_LOG_LEVEL   "8"
 #define DEF_RW_TIMEOUT	"2"
+#define DEF_PID_FILE    "/var/run/rp_server.pid"
 
 
 // ------
