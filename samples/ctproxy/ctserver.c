@@ -5,6 +5,7 @@
 #include <string.h>
 #include <sys/epoll.h>
 #include <sys/param.h>
+#include <libgen.h>
 #include <unistd.h>
 #include <fcntl.h>
 #include <errno.h>
@@ -15,10 +16,11 @@
 #include <netinet/in.h>
 #include <netinet/tcp.h>
 #include <arpa/inet.h>
+#include <netdb.h>
 #include <getopt.h>
 
 #include "ctserver.h"
-#include "util.h"
+#include "utils.h"
 #include "ctlog.h"
 #include "ctio.h"
 #include "confparser/confparser.h"
@@ -31,7 +33,7 @@
 char cfg_ini[MAXLINE]       = {0};
 char cport[128]             = {0};
 char cmax_connect[128]      = {0};
-char clog_leve[128]         = {0};
+char clog_level[128]         = {0};
 char crw_timeout[128]       = {0};
 char cpidfile[MAXLINE]     = {0};
 char child_exec[MAXLINE]    = {0};
@@ -48,7 +50,13 @@ int epoll_event_num         = 0;
 int epoll_num_running       = 0;
 struct epoll_event *epoll_evts = NULL;
 
-int listen_fd               = -1;
+//int listen_fd               = -1;
+char b_host[NI_MAXHOST];
+char b_port[NI_MAXSERV];
+int on = 1;
+int listen_socks[128];
+int listen_sock_types[128];
+int num_listen_socks = 0;
 
 /************************************
  * Global var
@@ -248,6 +256,7 @@ void init_client_with_idx(int i)
     memset(clients_t[i].ip, 0, sizeof(clients_t[i].ip));
     memset(clients_t[i].port, 0, sizeof(clients_t[i].port));
     memset(clients_t[i].sid, 0, sizeof(clients_t[i].sid));
+    memset(clients_t[i].ip_hex, 0, sizeof(clients_t[i].ip_hex));
 }
 
 void clean_client_with_idx(int i)
@@ -273,6 +282,7 @@ void clean_client_with_idx(int i)
     memset(clients_t[i].ip, 0, sizeof(clients_t[i].ip));
     memset(clients_t[i].port, 0, sizeof(clients_t[i].port));
     memset(clients_t[i].sid, 0, sizeof(clients_t[i].sid));
+    memset(clients_t[i].ip_hex, 0, sizeof(clients_t[i].ip_hex));
 }
 
 /**
@@ -332,7 +342,7 @@ int exit_child_with_sockfd(int sockfd)
  * @return
  *     -9: system error
  */
-int create_child_and_exec_with_idx_clientfd(int i, int connfd)
+int create_child_and_exec_with_idx_clientfd(int i, int listen_fd, int connfd)
 {
     /**
      *    父进程          子进程
@@ -398,9 +408,9 @@ int create_child_and_exec_with_idx_clientfd(int i, int connfd)
         }
 
         // launch child program
-        char child_sid[MAX_LINE]    = {0};
-        char child_remote[MAX_LINE] = {0};
-        char child_cfg[MAX_LINE]    = {0};
+        char child_sid[MAXLINE]    = {0};
+        char child_remote[MAXLINE] = {0};
+        char child_cfg[MAXLINE]    = {0};
 
         snprintf(child_sid, sizeof(child_sid), "-i%s", clients_t[i].sid);
         snprintf(child_remote, sizeof(child_remote), "-r%s:%s", clients_t[i].ip, clients_t[i].port);
@@ -414,7 +424,7 @@ int create_child_and_exec_with_idx_clientfd(int i, int connfd)
         args[4] = 0;
 
         // print exec cmd to log
-        char exec_log[MAX_LINE * 3] = {0};
+        char exec_log[MAXLINE * 3] = {0};
         char *pexec_log = exec_log;
         int len = 0, i = 0, nw = 0;
         while (args[i] != 0) {
@@ -461,6 +471,20 @@ int create_child_and_exec_with_idx_clientfd(int i, int connfd)
 }
 
 
+
+int epoll_add_socket(int sockfd, uint32_t events)
+{
+	struct epoll_event ev;
+    ev.events = events;
+    ev.data.fd = sockfd;
+    if (epoll_ctl(epoll_fd, EPOLL_CTL_ADD, ev.data.fd, &ev) == -1) {
+        log_error("epoll_ctl add: listen socket(%d) fail:[%d]%s", sockfd, errno, strerror(errno));
+        return 1;
+    }
+    return 0;
+}
+
+
 /*
 * @return  
 *   -1: fail.
@@ -485,8 +509,14 @@ static int create_and_bind(char *port)
     }
 
     for (rp = result; rp != NULL; rp = rp->ai_next) {
-        if (sfd = socket(rp->ai_family, rp->ai_socktype, rp->ai_protocol) == -1) {
+        if ((sfd = socket(rp->ai_family, rp->ai_socktype, rp->ai_protocol)) == -1) {
             log_error("socket fail");
+            continue;
+        }
+
+        if (bind(sfd, rp->ai_addr, rp->ai_addrlen) == -1) {
+            close(sfd);
+            log_error("bind socket fail(%d):(%s)", errno, strerror(errno));
             continue;
         }
 
@@ -494,12 +524,6 @@ static int create_and_bind(char *port)
         {
             log_error("setsocket SO_REUSEADDR fail(%d):(%s)", errno, strerror(errno));
             return -1;
-        }
-        
-        if (bind(sfd, rp->ai_addr, rp->ai_addrlen) == -1) {
-            close(sfd);
-            log_error("bind socket fail(%d):(%s)", errno, strerror(errno));
-            continue;
         }
 
         break;
@@ -509,6 +533,13 @@ static int create_and_bind(char *port)
     return sfd;
 }
 
+void sock_set_v6only(int fd)
+{   
+    int on = 1;
+    if (setsockopt(fd, IPPROTO_IPV6, IPV6_V6ONLY, &on, sizeof(on)) == -1)
+        fprintf(stderr, "setsockopt v6only");
+}
+
 void *get_in_addr(struct sockaddr *sa)
 {
     if (sa->sa_family == AF_INET) {
@@ -516,11 +547,26 @@ void *get_in_addr(struct sockaddr *sa)
     }
     return &(((struct sockaddr_in6 *)sa)->sin6_addr);
 }
-
-int client_name()
+int get_in_port(struct sockaddr *sa)
 {
-
+    if (sa->sa_family == AF_INET) {
+        return (((struct sockaddr_in *)sa)->sin_port);
+    }
+    return (((struct sockaddr_in6 *)sa)->sin6_port);
 }
+
+
+int which_is_listen(int fd)
+{
+	int i = 0;
+	for (i=0; i<num_listen_socks; i++) {
+		if (fd == listen_socks[i]) {
+			return i;
+		}
+	}
+	return -1;
+}
+
 
 
 void usage(char *prog)
@@ -529,9 +575,9 @@ void usage(char *prog)
     printf(" %s -c[config file] -d\n", prog);
     printf("\n");
     printf("Options:\n");
-    printf(" -c     file full path of config");
-    printf(" -d     to be a daemon module");
-    printf(" -h     show this help");
+    printf(" -c     file full path of config\n");
+    printf(" -d     to be a daemon module\n");
+    printf(" -h     show this help\n");
     return;
 }
 
@@ -566,7 +612,7 @@ int main(int argc, char **argv)
     become_daemon(am_daemon);
 
     // setup log
-    ctlog_level = atoi(clog_leve);
+    ctlog_level = atoi(clog_level);
     ctlog_open(basename(argv[0]), LOG_PID|LOG_NDELAY, LOG_MAIL);
 
     // client
@@ -584,26 +630,81 @@ int main(int argc, char **argv)
 
     // socket
     int connfd, n, nr, nw;
-    struct sockaddr_in local, remote;
-    socklen_t addrlen;
+	int ipv = 4;
+	struct addrinfo hints, *servinfo, *p;
+	struct sockaddr_storage client_addr;
+	socklen_t client_sin_size;
+	int rv;
 
-    listen_fd = create_and_bind(cport);
-    if (listen_fd == -1) {
-        server_exit(1);
+	memset(&hints, 0, sizeof(hints));
+	hints.ai_family = AF_UNSPEC;
+	hints.ai_socktype = SOCK_STREAM;
+    hints.ai_flags = AI_PASSIVE;    // use mine IP
+
+	if ((rv = getaddrinfo(NULL, cport, &hints, &servinfo)) != 0) {
+        fprintf(stderr, "getaddrinfo fail:%s\n", gai_strerror(rv));
+        log_error("getaddrinfo fail:%s\n", gai_strerror(rv));
+		server_exit(1);
     }
 
-    // 设置listen_fd为非阻塞
-    if (ndelay_on(listen_fd) == -1) {
-        log_error("set noblocking fd[%d] fail:[%d]%s", listen_fd, errno, strerror(errno));
-        server_exit(1);
-    }
+	// find all result in loop, then bind first result
+    int tmp_fd = -1;
+	for(p = servinfo; p != NULL; p = p->ai_next) {
+		if (rv = getnameinfo(p->ai_addr, p->ai_addrlen,
+                    b_host, sizeof(b_host),
+                    b_port, sizeof(b_port), NI_NUMERICHOST|NI_NUMERICSERV) != 0) {
+            log_info("getnameinfo fail:%s", gai_strerror(rv));
+            fprintf(stderr, "getnameinfo fail:%s", gai_strerror(rv));
+            continue;
+        }
 
-    // Listen
-    if (listen(listen_fd, atoi(cmax_connect)) != 0) {
-        log_error("listen fd[%d] max number[%d] fail:[%d]%s", listen_fd, atoi(cmax_connect), errno, strerror(errno));
-        server_exit(1);
-    }
-    log_info("listen %d port", atoi(cport));    
+        if ((tmp_fd = socket(p->ai_family, p->ai_socktype, p->ai_protocol)) == -1) {
+            log_error("create socket fail(%d):%s", errno, strerror(errno));
+            fprintf(stderr, "create socket fail(%d):%s", errno, strerror(errno));
+            continue;
+        }
+
+		// set nonblock
+        if (ndelay_on(tmp_fd) == -1) {
+            close(tmp_fd);
+            continue;
+        }
+
+        // Allow local port reuse in TIME_WAIT.
+        if (setsockopt(tmp_fd, SOL_SOCKET, SO_REUSEADDR, &on, sizeof(on)) == -1) {
+            log_error("setsockop SO_REUSEADDR fail(%d):%s", errno, strerror(errno));
+            fprintf(stderr, "setsockop SO_REUSEADDR fail(%d):%s", errno, strerror(errno));
+			server_exit(1);
+        }
+
+		if (p->ai_family == AF_INET6) {
+            sock_set_v6only(tmp_fd);
+            ipv = 6;
+        } else if (p->ai_family == AF_INET) {
+            ipv = 4;
+        }
+
+		if (bind(tmp_fd, p->ai_addr, p->ai_addrlen) == -1) {
+            close(tmp_fd);
+            log_error("bind socket fail(%d):%s", errno, strerror(errno));
+            fprintf(stderr, "bind socket fail(%d):%s", errno, strerror(errno));
+            continue;
+        }
+
+        listen_socks[num_listen_socks] = tmp_fd;
+        listen_sock_types[num_listen_socks] = ipv;
+        num_listen_socks++;
+
+        if (listen(tmp_fd, atoi(cmax_connect)) == -1) {
+            perror("listen");
+            exit(1);
+        }
+
+        fprintf(stdout, "Server listening on %s port %s\n", b_host, b_port);
+        log_info("Server listening on %s port %s\n", b_host, b_port);
+	}
+	freeaddrinfo(servinfo);
+
 
     // Ignore pipe signal
     sig_pipeignore();
@@ -646,6 +747,7 @@ int main(int argc, char **argv)
     }
 
     // 设置ET模式
+/*
     struct epoll_event ev;
     ev.events = EPOLLIN | EPOLLET;
     ev.data.fd = listen_fd;
@@ -653,7 +755,17 @@ int main(int argc, char **argv)
         log_error("epoll_ctl: listen socket fail(%d):(%s)", errno, strerror(errno));
         server_exit(1);
     }
-
+*/
+	for (epoll_i=0; epoll_i<num_listen_socks; epoll_i++) {
+		uint32_t events = EPOLLIN | EPOLLET;
+		if (epoll_add_socket(listen_socks[epoll_i], events) != 0) {
+			log_error("epoll_ctl: listen fd(%d) socket fail(%d):(%s)", listen_socks[epoll_i], errno, strerror(errno));
+			fprintf(stderr, "epoll_ctl: listen fd(%d) socket fail(%d):(%s)", listen_socks[epoll_i], errno, strerror(errno));
+			server_exit(1);
+		}
+	}
+	
+	epoll_i = 0;
     epoll_num_running = 0;
     for (;;) {
         epoll_nfds = epoll_wait(epoll_fd, epoll_evts, epoll_event_num, -1);
@@ -664,7 +776,16 @@ int main(int argc, char **argv)
 
             int evt_fd = epoll_evts[epoll_i].data.fd;
             int evt    = epoll_evts[epoll_i].events;
-            log_debug("there is event fd:%d event:%d listen_fd:%d", evt_fd, evt, listen_fd);
+            log_debug("there is event fd:%d event:%d (%d/%d)", evt_fd, evt, epoll_i+1, epoll_nfds);
+
+			int listen_fd = -1;
+			int fdv = 4;		// ip version
+			int si = which_is_listen(evt_fd);
+			if (si != -1) {
+				listen_fd = listen_socks[si];
+				fdv = listen_sock_types[si];
+				log_debug("there is IPv%d event fd:%d", fdv, listen_fd);
+			}
 
             if (evt & EPOLLERR) {
                 // ------ 监控到错误事件 ------
@@ -676,10 +797,12 @@ int main(int argc, char **argv)
                 // ------ 监控到可读事件 ------
                 if (evt_fd == listen_fd) {
                     // ------ 处理新接入的socket ------
+
                     int accept_times = 0;
                     while (1) {
                         accept_times++;
-                        connfd = accept(listen_fd, (struct sockaddr *)&remote, &addrlen);
+						client_sin_size = sizeof(client_addr);
+						connfd = accept(listen_fd, (struct sockaddr *)&client_addr, &client_sin_size);
                         if (connfd == -1) {
                             if ((errno == EAGAIN) || (errno == EWOULDBLOCK) 
                                 || (errno == EINTR) || (errno == EPROTO)) {
@@ -710,7 +833,7 @@ int main(int argc, char **argv)
                         log_error("%s get idle index from client list fail: maybe client queue is full.", scid);
                         safe_write(connfd, "system error\n", 13, atoi(crw_timeout));;
                         close(connfd);
-                        goto epoll_again;
+                        goto next_epoll;
                     }
 
                     clients_t[i].used = 1;
@@ -718,49 +841,37 @@ int main(int argc, char **argv)
                     snprintf(clients_t[i].sid, sizeof(clients_t[i].sid), "%s", scid);
 
                     // Get client IP and Port
-                    /*
-                    char *ipaddr = inet_ntoa(remote.sin_addr);
-                    struct sockaddr_in sa;
-                    int len = sizeof(sa);
-                    if (getpeername(connfd, (struct sockaddr *)&sa, &len)) {
-                        log_error("%s get client ip and port fail:[%d]%s", scid, errno, strerror(errno));
-                    }
-                    snprintf(clients_t[i].ip, sizeof(clients_t[i].ip), "%s", inet_ntoa(sa.sin_addr));
-                    snprintf(clients_t[i].port, sizeof(clients_t[i].port), "%d", ntohs(sa.sin_port));
-                    */
+					char cip[INET6_ADDRSTRLEN];
+					inet_ntop(client_addr.ss_family, 
+							get_in_addr((struct sockaddr *)&client_addr),
+							cip, sizeof(cip));
+					int cport = ntohs(get_in_port((struct sockaddr *)&client_addr));
 
-                    char b_host[NI_MAXHOST];
-                    char b_port[NI_MAXSERV];
-                    char s[INET6_ADDRSTRLEN];
-                    int rv;
+					snprintf(clients_t[i].ip, sizeof(clients_t[i].ip), "%s", cip);
+					snprintf(clients_t[i].port, sizeof(clients_t[i].port), "%d", cport);
 
-                    if (rv = getnameinfo(&remote, addrlen, 
-                                        b_host, sizeof(b_host),
-                                        b_port, sizeof(b_port), 
-                                        NI_NUMERICHOST|NI_NUMERICSERV) != 0) {
-                        log_info("getnameinfo fail: %s", gai_strerror(rv));
-                    }
-                    inet_ntop(remote.ss_family, 
-                            get_in_addr((struct sockaddr *)&remote),
-                            s, sizeof(s));
-                    log_info("got connect from %s", s);
+					conv_ip_to_hex_str_family(client_addr.ss_family, cip,
+										clients_t[i].ip_hex, sizeof(clients_t[i].ip_hex));
+
+                    log_info("got IPv%d connect from %s(%s) port %s", fdv, 
+									clients_t[i].ip, clients_t[i].ip_hex, clients_t[i].port);
 
                     // Fork child and exec
-                    int ret = create_child_and_exec_with_idx_clientfd(i, connfd);
+                    int ret = create_child_and_exec_with_idx_clientfd(i, listen_fd, connfd);
                     if (ret != 0) {
                         char error_buf[] = "Server Temporarily Error, Please Try Again Later\n";
                         safe_write(connfd, error_buf, strlen(error_buf), atoi(crw_timeout));
                         close_fd(connfd);
-                        goto epoll_again;
+                        goto next_epoll;
                     }
 
                     epoll_num_running++;
-                    goto epoll_again;
+                    goto next_epoll;
 
                 } else {
                     // ------ 处理子进程可读数据 ------
                     // Get child sid
-                    char child_mid[MAX_LINE] = {0};
+                    char child_mid[MAXLINE] = {0};
                     int idx = get_idx_with_sockfd(evt_fd);
                     if (idx < 0 ) {
                         log_error("get child index with socket fd:%d fail", evt_fd);
@@ -781,8 +892,8 @@ int main(int argc, char **argv)
                     log_error("get index with socket fd[%d] fail, maybe memory leak", evt_fd);
                     close_fd(evt_fd);
                 } else {
-                    log_debug("%s get event EPOLLHUP: epoll_i[%d] fd[%d] get fd[%d], used[%d]",
-                            clients_t[idx].sid, epoll_i, epoll_evts[epoll_i].data.fd, clients_t[idx].pfd_r, clients_t[idx].used);
+                    log_debug("%s get event EPOLLHUP: epoll_i[%d] fd[%d] used[%d]",
+                            clients_t[idx].sid, epoll_i, epoll_evts[epoll_i].data.fd, clients_t[idx].used);
                     
                     clean_client_with_idx(idx);
                     close_fd(evt_fd);
@@ -791,13 +902,16 @@ int main(int argc, char **argv)
                 epoll_num_running--;
             }
 
-epoll_again:
+next_epoll:
             sig_childunblock();
         }
     }
 
     close_fd(epoll_fd);
-    close_fd(listen_fd);
+
+	for (epoll_i=0; epoll_i<num_listen_socks; epoll_i++) {
+    	close_fd(listen_socks[epoll_i]);
+	}
 
     if (clients_t != NULL) {
         free(clients_t);

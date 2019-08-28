@@ -4,6 +4,9 @@
 #include <sys/time.h>
 #include <sys/types.h>
 #include <unistd.h>
+#include <time.h>
+
+#include "ctlog.h"
 
 
 static time_t last_read_time;
@@ -38,7 +41,7 @@ size_t safe_read(int fd, char *buf, size_t len, int timeout_seconds)
         cnt = select(fd+1, &r_fds, NULL, &e_fds, &tv);
         if (cnt <= 0) {
             if (cnt < 0 && errno == EBADF) {
-                log_error("safe_read select failed(%d):%s (%s)", errno, strerror(errno), who_am_i(fd));
+                log_error("safe_read fd(%d) select failed(%d):%s", fd, errno, strerror(errno));
                 return -1;
             }
             
@@ -60,7 +63,7 @@ size_t safe_read(int fd, char *buf, size_t len, int timeout_seconds)
             if (n < 0) {
                 if (errno == EINTR)
                     continue;
-                log_error("failed to read %ld bytes (%s)", (long)len, who_am_i(fd));
+                log_error("failed to read %ld bytes fd(%d)", (long)len, fd);
                 return -1;
             }
             if ((got += (size_t)n) == len)
@@ -93,8 +96,8 @@ size_t safe_write(int fd, const char *buf, size_t len, int timeout_seconds)
     if (n < 0) {
         if (errno != EINTR && errno != EWOULDBLOCK && errno != EAGAIN) {
           write_failed:
-            log_error("safe_write failed(%d):%s to write %ld bytes to %s (%s)",
-                    errno, strerror(errno), (long)len, what_fd_is(fd), who_am_i(fd));
+            log_error("safe_write failed(%d):%s to write %ld bytes to fd(%d)",
+                    errno, strerror(errno), (long)len, fd);
             //exit_cleanup(11);    
             return -1;
         }
@@ -116,8 +119,8 @@ size_t safe_write(int fd, const char *buf, size_t len, int timeout_seconds)
         cnt = select(fd + 1, NULL, &w_fds, NULL, &tv);
         if (cnt <= 0) {
             if (cnt < 0 && errno == EBADF) {
-                log_error("safe_write select failed(%d):%s on %s (%s)",
-                        errno, strerror(errno), what_fd_is(fd), who_am_i(fd));
+                log_error("safe_write select failed(%d):%s on fd(%d)",
+                        errno, strerror(errno), fd);
                 //exit_cleanup(errno);
                 return -1;
             }

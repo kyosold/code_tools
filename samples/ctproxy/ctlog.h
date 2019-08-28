@@ -23,7 +23,7 @@ extern char ctlog_sid[MAXLINE];
         if (*ctlog_sid == '\0') { \
             syslog(LOG_EMERG, "[EMERG] %s "fmt, __func__, ##__VA_ARGS__); \
         } else { \
-            syslog(LOG_EMERG, "[EMERG] %s %s "fmt, __func__, ctlog_sid, ##__VA_ARGS__)
+            syslog(LOG_EMERG, "[EMERG] %s %s "fmt, __func__, ctlog_sid, ##__VA_ARGS__); \
         } \
     } \
 }
@@ -33,7 +33,7 @@ extern char ctlog_sid[MAXLINE];
         if (*ctlog_sid == '\0') { \
             syslog(LOG_ALERT, "[ALERT] %s "fmt, __func__, ##__VA_ARGS__); \
         } else { \
-            syslog(LOG_ALERT, "[ALERT] %s %s "fmt, __func__, ctlog_sid, ##__VA_ARGS__)
+            syslog(LOG_ALERT, "[ALERT] %s %s "fmt, __func__, ctlog_sid, ##__VA_ARGS__); \
         } \
     } \
 }
@@ -43,7 +43,7 @@ extern char ctlog_sid[MAXLINE];
         if (*ctlog_sid == '\0') { \
             syslog(LOG_CRIT, "[CRIT] %s "fmt, __func__, ##__VA_ARGS__); \
         } else { \
-            syslog(LOG_CRIT, "[CRIT] %s %s "fmt, __func__, ctlog_sid, ##__VA_ARGS__)
+            syslog(LOG_CRIT, "[CRIT] %s %s "fmt, __func__, ctlog_sid, ##__VA_ARGS__); \
         } \
     } \
 }
@@ -53,7 +53,7 @@ extern char ctlog_sid[MAXLINE];
         if (*ctlog_sid == '\0') { \
             syslog(LOG_ERR, "[ERROR] %s "fmt, __func__, ##__VA_ARGS__); \
         } else { \
-            syslog(LOG_ERR, "[ERROR] %s %s "fmt, __func__, ctlog_sid, ##__VA_ARGS__)
+            syslog(LOG_ERR, "[ERROR] %s %s "fmt, __func__, ctlog_sid, ##__VA_ARGS__); \
         } \
     } \
 }
@@ -63,7 +63,7 @@ extern char ctlog_sid[MAXLINE];
         if (*ctlog_sid == '\0') { \
             syslog(LOG_WARNING, "[WARNING] %s "fmt, __func__, ##__VA_ARGS__); \
         } else { \
-            syslog(LOG_WARNING, "[WARNING] %s %s "fmt, __func__, ctlog_sid, ##__VA_ARGS__)
+            syslog(LOG_WARNING, "[WARNING] %s %s "fmt, __func__, ctlog_sid, ##__VA_ARGS__); \
         } \
     } \
 }
@@ -73,7 +73,7 @@ extern char ctlog_sid[MAXLINE];
         if (*ctlog_sid == '\0') { \
             syslog(LOG_NOTICE, "[NOTICE] %s "fmt, __func__, ##__VA_ARGS__); \
         } else { \
-            syslog(LOG_NOTICE, "[NOTICE] %s %s "fmt, __func__, ctlog_sid, ##__VA_ARGS__)
+            syslog(LOG_NOTICE, "[NOTICE] %s %s "fmt, __func__, ctlog_sid, ##__VA_ARGS__); \
         } \
     } \
 }
@@ -83,7 +83,7 @@ extern char ctlog_sid[MAXLINE];
         if (*ctlog_sid == '\0') { \
             syslog(LOG_INFO, "[INFO] %s "fmt, __func__, ##__VA_ARGS__); \
         } else { \
-            syslog(LOG_INFO, "[INFO] %s %s "fmt, __func__, ctlog_sid, ##__VA_ARGS__)
+            syslog(LOG_INFO, "[INFO] %s %s "fmt, __func__, ctlog_sid, ##__VA_ARGS__); \
         } \
     } \
 }
@@ -93,12 +93,12 @@ extern char ctlog_sid[MAXLINE];
         if (*ctlog_sid == '\0') { \
             syslog(LOG_DEBUG, "[DEBUG] %s "fmt, __func__, ##__VA_ARGS__); \
         } else { \
-            syslog(LOG_DEBUG, "[DEBUG] %s %s "fmt, __func__, ctlog_sid, ##__VA_ARGS__)
+            syslog(LOG_DEBUG, "[DEBUG] %s %s "fmt, __func__, ctlog_sid, ##__VA_ARGS__); \
         } \
     } \
 }
 
 
-void ctlog_open(const char *ident, int opt, int facility)
+void ctlog_open(const char *ident, int opt, int facility);
 
 #endif

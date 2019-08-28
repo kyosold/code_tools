@@ -76,6 +76,7 @@ int fd_copy(int to, int from);
 int fd_move(int to, int from);
 
 
+int conv_ip_to_hex_str_family(unsigned short sa_family, char *ip_str, char *ip_hex_str, size_t ip_hex_str_size);
 
 void sig_catch(int sig, void (*f) ());
 void sig_block(int sig);

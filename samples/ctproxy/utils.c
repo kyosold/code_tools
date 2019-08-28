@@ -14,7 +14,7 @@
 #include <uuid/uuid.h>
 #include <stdint.h>
 
-#include "util.h"
+#include "utils.h"
 #include "ctlog.h"
 
 
@@ -29,18 +29,17 @@
  */
 int create_unique_id(char *mid, size_t mid_size)
 {
-    uuid_t uid;
+	uuid_t uuid;
     uuid_generate(uuid);
-    unsigned char *p = uuid;
 
+    unsigned char *p = uuid;
     int i;
     char ch[5] = {0};
-    for (i = 0; i < sizeof(uuid_t); i++)
-    {
+    for (i=0; i<sizeof(uuid_t); i++,p++) {
         snprintf(ch, sizeof(ch), "%02X", *p);
         mid[i*2] = ch[0];
         mid[i*2+1] = ch[1];
-    }
+    }   
 
     return i;
 }
@@ -109,6 +108,44 @@ int fd_move(int to, int from)
         return -1;
     close(from);
     return 0;
+}
+
+
+
+/*
+ * @brief   Conver ip string(ipv4 10.29.11.22 ipv6 ef:31..) to hex string
+ * @param   sa_family           AF_INET or AF_INET6
+ * @param   ip_str              The input ip string 
+ * @param   ip_hex_str          The output result string     
+ * @param   ip_hex_str_size     The buffer sizeof of ip_hex_str, if is AF_INET6, size must more then 256.
+ * @return  0 is fail. > 0 is length of ip_hex_str
+ */
+int conv_ip_to_hex_str_family(unsigned short sa_family, char *ip_str, char *ip_hex_str, size_t ip_hex_str_size)
+{
+    int  n = 0;
+    if (sa_family == AF_INET6) {
+        struct sockaddr_in6 sa; 
+        int i = inet_pton(sa_family, ip_str, &sa.sin6_addr);
+        if (i != 1) {
+            log_error("inet_pton(AF_INET6, '%s') fail:%s\n", ip_str, strerror(errno));
+            return n;
+        }   
+        for(i=0; i<8; i++) {
+            n += sprintf(ip_hex_str+4*i, "%04X", ntohs(sa.sin6_addr.s6_addr16[i]));
+        }   
+    } else if (sa_family == AF_INET) {
+        uint32_t ia; 
+        int i = inet_pton(sa_family, ip_str, &ia);
+        if (i != 1) {
+            log_error("inet_pton(AF_INET6, '%s') fail:%s\n", ip_str, strerror(errno));
+            return n;
+        }
+
+        n = snprintf(ip_hex_str, ip_hex_str_size, "%X", ia);
+    } else {
+    }
+
+    return n;
 }
 
 
