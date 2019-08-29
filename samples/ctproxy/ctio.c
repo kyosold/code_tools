@@ -148,3 +148,35 @@ size_t safe_write(int fd, const char *buf, size_t len, int timeout_seconds)
         }
     }  // end while
 }
+
+
+
+/* Read a line of up to bufsiz-1 characters into buf.  Strips
+ * the (required) trailing newline and all carriage returns.
+ * Returns 1 for success; 0 for I/O error or truncation. 
+ * 
+ * 读取一行，碰到\r忽略，碰到\n替换成\0并返回。
+ * 
+ * return:
+ *      0: fail, and errno is set appropriately 
+ *      1: succ. use strlen(buf) get length
+ * */
+int read_line(int fd, char *buf, size_t bufsiz, int rtimeout)
+{
+    bufsiz--; /* leave room for the null */
+    while (bufsiz > 0) {
+        if (safe_read(fd, buf, 1, rtimeout) == 0) {
+            return 0;
+        }
+        if (*buf == '\0')
+            return 0;
+        if (*buf == '\n')
+            break;
+        if (*buf != '\r') {
+            buf++;
+            bufsiz--;
+        }
+    }
+    *buf = '\0';
+    return bufsiz > 0;
+}

@@ -19,6 +19,15 @@ ctserver.o:	ctserver.c
 	$(SHLD) -c -o ctserver.o ctserver.c $(INCS)
 
 
+###### child ######
+$(CHILD): ctchild.o utils.o ctlog.o ctio.o ./confparser/libconfparser.a
+	$(SHLD) -o $(CHILD) ctchild.o utils.o ctlog.o ctio.o \
+				./confparser/libconfparser.a $(INCS) $(LDS)
+
+ctchild.o: ctchild.c
+	$(SHLD) -c -o ctchild.o ctchild.c $(INCS)
+
+
 ###### other ######
 utils.o: utils.c
 	$(SHLD) -c -o utils.o utils.c $(INCS)

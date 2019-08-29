@@ -747,15 +747,6 @@ int main(int argc, char **argv)
     }
 
     // 设置ET模式
-/*
-    struct epoll_event ev;
-    ev.events = EPOLLIN | EPOLLET;
-    ev.data.fd = listen_fd;
-    if (epoll_ctl(epoll_fd, EPOLL_CTL_ADD, ev.data.fd, &ev) == -1) {
-        log_error("epoll_ctl: listen socket fail(%d):(%s)", errno, strerror(errno));
-        server_exit(1);
-    }
-*/
 	for (epoll_i=0; epoll_i<num_listen_socks; epoll_i++) {
 		uint32_t events = EPOLLIN | EPOLLET;
 		if (epoll_add_socket(listen_socks[epoll_i], events) != 0) {
