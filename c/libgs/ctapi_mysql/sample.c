@@ -6,7 +6,7 @@
 
 #define MAX_LINE    1024
 
-#define user "sales03@tti-mould.sinanet.com"
+#define user "sales03@tti-mould.net.com"
 #define subject "This is test subject"
 #define db_host "mysql_host"
 #define db_port "mysql_port"
